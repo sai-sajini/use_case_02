@@ -1,0 +1,62 @@
+{
+  "products": [
+    {
+      "id": "P001",
+      "name": "Laptop Pro 15",
+      "category": "Electronics",
+      "price": 1299.99,
+      "stock": 25,
+      "description": "Professional-grade laptop with 15 inch display and 512GB SSD."
+    },
+    {
+      "id": "P002",
+      "name": "Wireless Noise Cancelling Headphones",
+      "category": "Electronics",
+      "price": 299.99,
+      "stock": 40,
+      "description": "High-fidelity wireless headphones with active noise cancelling."
+    },
+    {
+      "id": "P003",
+      "name": "Espresso Coffee Machine",
+      "category": "Appliances",
+      "price": 399.99,
+      "stock": 15,
+      "description": "Premium espresso coffee machine with milk frother."
+    },
+    {
+      "id": "P004",
+      "name": "Ergonomic Office Chair",
+      "category": "Furniture",
+      "price": 155.50,
+      "stock": 10,
+      "description": "Ergonomic office chair with lumbar support and adjustable height."
+    },
+    {
+      "id": "P005",
+      "name": "4K LED Monitor",
+      "category": "Electronics",
+      "price": 499.99,
+      "stock": 20,
+      "description": "Ultra HD 4K LED monitor with HDR and 27 inch screen."
+    }
+  ],
+  "negativeTests": [
+    {
+      "id": "P006",
+      "name": "",
+      "category": "Electronics",
+      "price": -100.00,
+      "stock": 5,
+      "description": "Negative price and empty product name."
+    },
+    {
+      "id": "P007",
+      "name": "Monitor",
+      "category": "Electronics",
+      "price": 199.99,
+      "stock": -3,
+      "description": "Negative stock value test."
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+requests
+python-dotenv
+azure-ai-inference
+azure-core
+bs4

@@ -1,0 +1,104 @@
+prompt = ("Your are a Selenium UI testing expert. Generate a complete Selenium Test Automation Project in Java." 
+                "INPUT: Project file"
+                "OUTPUT: Selenium Test Automation Project" 
+
+                "Generate Selenium Test Automation Project using the following specifications:"
+
+                "Tech Stack:"
+                "- Selenium 4.24.0"
+                "- Java 17"
+                "- BDD framework using Cucumber"
+                "- Page Object Model (POM) with @FindBy annotations"
+                "- WebDriverManager 5.9.2 for driver setup"
+                "- Extent Reports integration for reporting"
+                "- Logging support using Log4j 2.x"
+
+                "Maven Project Structure:"
+                "- src/main/java/com/yourcompany/pages      --> Page Object classes"
+                "- src/main/java/com/yourcompany/utils      --> Utility classes (DriverManager, ConfigReader, LoggerUtil)`"
+                "- src/test/java/com/yourcompany/steps      --> Step definitions"
+                "- src/test/java/com/yourcompany/runners    --> Test runner classes"
+                "- src/test/java/com/yourcompany/hooks      --> Hooks for setup/teardown"
+                "- src/test/resources/features              --> Feature files"
+                "- src/test/resources/config                --> Config files (config.properties, log4j2.xml)"
+                "- src/test/resources/testdata              --> Test data files (Excel, JSON)"
+
+                "Requirements:"
+                "1. Generate code for a **Login Page test** (as an example)."
+                "2. Page Objects should use `@FindBy` annotations for locators."
+                "3. Include working logic to interact with UI elements (buttons, inputs, dropdowns, labels)."
+                "4. Implement both positive and negative login scenarios."
+                "5. Feature file should contain Cucumber scenarios for login."
+                "6. Step definitions should map the feature steps to Page Object methods."
+                "7. Add Hooks for browser setup/teardown using WebDriverManager."
+                "8. Integrate Extent Reports for reporting and Log4j for logging."
+                "9. Use `config.properties` to store browser, baseURL, and credentials."
+
+                "Use proper naming conventions and comments so the project is production-ready."
+                "Ensure the generated code is modular, maintainable, and follows best practices for Selenium automation in Java."
+__________________________________________________________
+    prompt = ("Your are a Selenium UI testing expert. Generate a complete Selenium Test Automation Project in Java." 
+                "INPUT: Project file"
+                "OUTPUT: Selenium Test Automation Project" 
+
+                "Generate Selenium Test Automation Project using the following specifications:"
+
+                "Tech Stack:"
+                "- Selenium 4.24.0"
+                "- Java 17"
+                "- BDD framework using Cucumber"
+                "- Page Object Model (POM) with @FindBy annotations"
+                "- WebDriverManager 5.9.2 for driver setup"
+                "- Extent Reports integration for reporting"
+                "- Logging support using Log4j 2.x"
+
+                "Maven Project Structure:"
+                "- src/main/java/com/yourcompany/pages      --> Page Object classes"
+                "- src/main/java/com/yourcompany/utils      --> Utility classes (DriverManager, ConfigReader, LoggerUtil)`"
+                "- src/test/java/com/yourcompany/steps      --> Step definitions"
+                "- src/test/java/com/yourcompany/runners    --> Test runner classes"
+                "- src/test/java/com/yourcompany/hooks      --> Hooks for setup/teardown"
+                "- src/test/resources/features              --> Feature files"
+                "- src/test/resources/config                --> Config files (config.properties, log4j2.xml)"
+                "- src/test/resources/testdata              --> Test data files (Excel, JSON)"
+
+                "Requirements:"
+                "1. Generate code for a **Login Page test** (as an example)."
+                "2. Page Objects should use `@FindBy` annotations for locators."
+                "3. Include working logic to interact with UI elements (buttons, inputs, dropdowns, labels)."
+                "4. Implement both positive and negative login scenarios."
+                "5. Feature file should contain Cucumber scenarios for login."
+                "6. Step definitions should map the feature steps to Page Object methods."
+                "7. Add Hooks for browser setup/teardown using WebDriverManager."
+                "8. Integrate Extent Reports for reporting and Log4j for logging."
+                "9. Use `config.properties` to store browser, baseURL, and credentials."
+
+                "Use proper naming conventions and comments so the project is production-ready."
+                "Ensure the generated code is modular, maintainable, and follows best practices for Selenium automation in Java."
+            )
+
+____________________________________________________
+
+Make a simple python project that acts like a calculator. It should be able to do basic arithmetic operations like addition, subtraction, multiplication, and division. The project should include any necessary modules. The code should be well-structured and easy to understand. It should be runnable.
+Please output the entire project as a single Python dictionary, in the following format:
+
+{
+    "dir/file_name.py" : "code inside this file",
+    "dir/file_name.py" : "code inside this file"
+}
+
+You must give your entire response as a Python dictionary.
+Each key should be a filename (including any folder path if necessary), and each value should be the complete contents of that file as a string.
+Do not include explanations, comments, or any extra text. It will be accepted only if it is needed in the code file. Give only the Python dictionary.
+Use the following examples to learn how to respond.
+correct Example output:
+{
+"main.py": "print("Hello, world!")\n",
+"src/calculator.py": "def add(a, b):\n    return a + b\n",
+"requirements.txt": ""
+}
+
+incorrect example: 
+We are creating a simple calculator project with the following structure: A main script: `calculator/main.py`, A module for calculator operations: `calculator/operations.py`, A requirements.txt file , though no external ---- 
+
+If you add any extra explanation, you will be penalized.
