@@ -1,46 +1,30 @@
-Feature: Contact Page - Form Submission & Validation
+Feature: Contact Us Form Submission
+  As a user
+  I want to contact the company through the contact page
+  So that I can send my message and expect a response
 
   Background:
-    Given user navigates to Contact page
+    Given I open the browser and launch the application
+    And I navigate to the Contact page
 
-  Scenario Outline: Successful contact form submission
-    When user enters name "<name>", email "<email>", subject "<subject>", and message "<message>"
-    And user uploads file "<file>"
-    And user submits the contact form
-    Then "Thank you" message should be displayed
-    And form fields should be cleared
+  Scenario: Successfully submitting the contact form
+    When I enter valid contact details
+    And I click the Send button
+    Then I should see a success message on the contact page
+    And the form should be reset
 
-    Examples:
-      | name      | email                 | subject      | message           | file         |
-      | Alice Doe | alice.doe@email.com   | Inquiry      | Need more info    | valid.png    |
-      | Bob Ray   | bob.ray@test.com      | Feedback     | Great website!    | upload.docx  |
+  Scenario: Submitting the contact form with missing required fields
+    When I enter incomplete contact details
+    And I click the Send button
+    Then I should see validation errors for required fields
+    And the form should not be submitted
 
-  Scenario Outline: Invalid form submission - missing required field
-    When user enters name "<name>", email "<email>", subject "<subject>", and message "<message>"
-    And user uploads file "<file>"
-    And user submits the contact form
-    Then error message "<error_msg>" should be displayed
+  Scenario: Submitting the contact form with invalid email address
+    When I enter an invalid email in the contact details
+    And I click the Send button
+    Then I should see an invalid email error message
+    And the form should not be submitted
 
-    Examples:
-      | name      | email                 | subject | message                 | file       | error_msg                     |
-      |           | john@email.com        | Support | Please help             | test.png   | Name is required              |
-      | Ann Lee   |                       | Help    | I need assistance       | img.jpg    | Email is required             |
-      | Mark Z    | mark@email.com        |         | How do I reset password | file.pdf   | Subject is required           |
-      | Eva B     | eva@email.com         | Update  |                         | valid.png  | Message is required           |
-
-  Scenario: Upload unsupported file type
-    When user enters name "Test User", email "test@domain.com", subject "Bug", and message "Bug report"
-    And user uploads file "unsupported.exe"
-    And user submits the contact form
-    Then error message "Unsupported file type" should be displayed
-
-  Scenario: Form validations - invalid email format
-    When user enters name "Example", email "invalid_email", subject "Test", and message "Testing invalid email"
-    And user submits the contact form
-    Then error message "Please enter a valid email" should be displayed
-
-  Scenario: Drag and drop file upload
-    When user drags and drops file "dragdrop.pdf" to the upload area
-    And user enters name "Elena", email "elena@sample.com", subject "Proposal", and message "Proposal attached"
-    And user submits the contact form
-    Then "Thank you" message should be displayed
+  Scenario: Attempting to upload an unsupported file type
+    When I attempt to upload an unsupported file type in the contact form
+    Then I should see an unsupported file type error message

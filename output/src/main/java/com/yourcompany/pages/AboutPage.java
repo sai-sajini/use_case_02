@@ -4,77 +4,86 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import com.yourcompany.utils.LoggerUtil;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 public class AboutPage {
-    WebDriver driver;
+    private WebDriver driver;
+    private WebDriverWait wait;
 
     @FindBy(xpath = "//h1[contains(text(),'About Us')]")
-    private WebElement headingAboutUs;
+    private WebElement aboutHeader;
 
-    @FindBy(id = "company-history")
-    private WebElement companyHistorySection;
+    @FindBy(id = "company-mission")
+    private WebElement companyMission;
 
-    @FindBy(id = "team-section")
+    @FindBy(id = "company-values")
+    private WebElement companyValues;
+
+    @FindBy(css = "button#read-more")
+    private WebElement readMoreButton;
+
+    @FindBy(id = "more-description")
+    private WebElement moreDescription;
+
+    @FindBy(css = "#team-members")
     private WebElement teamSection;
 
-    @FindBy(css = "#team-section .member")
-    private WebElement firstTeamMember;
-
-    @FindBy(xpath = "//button[@id='see-more-history']")
-    private WebElement btnSeeMoreHistory;
-
-    @FindBy(css = "#history-details")
-    private WebElement historyDetails;
-
-    @FindBy(xpath = "//a[text()='Contact Us']")
-    private WebElement lnkContactUs;
-
-    @FindBy(css = "div.testimonial")
-    private WebElement testimonialSection;
+    @FindBy(css = "#team-members .member")
+    private java.util.List<WebElement> teamMembers;
 
     public AboutPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         PageFactory.initElements(driver, this);
     }
 
-    public String getHeading() {
-        LoggerUtil.info("Getting About Us page heading text.");
-        return headingAboutUs.getText();
+    public boolean isAboutHeaderDisplayed() {
+        wait.until(ExpectedConditions.visibilityOf(aboutHeader));
+        return aboutHeader.isDisplayed();
     }
 
-    public boolean isCompanyHistoryDisplayed() {
-        LoggerUtil.info("Checking if Company History section is displayed.");
-        return companyHistorySection.isDisplayed();
+    public String getCompanyMission() {
+        wait.until(ExpectedConditions.visibilityOf(companyMission));
+        return companyMission.getText();
+    }
+
+    public String getCompanyValues() {
+        wait.until(ExpectedConditions.visibilityOf(companyValues));
+        return companyValues.getText();
+    }
+
+    public void clickReadMore() {
+        wait.until(ExpectedConditions.elementToBeClickable(readMoreButton));
+        readMoreButton.click();
+    }
+
+    public boolean isMoreDescriptionDisplayed() {
+        try {
+            wait.until(ExpectedConditions.visibilityOf(moreDescription));
+            return moreDescription.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean isTeamSectionDisplayed() {
-        LoggerUtil.info("Checking if Team section is displayed.");
+        wait.until(ExpectedConditions.visibilityOf(teamSection));
         return teamSection.isDisplayed();
     }
 
-    public String getFirstTeamMemberName() {
-        LoggerUtil.info("Getting first team member name.");
-        return firstTeamMember.getText();
+    public int getTeamMembersCount() {
+        wait.until(ExpectedConditions.visibilityOfAllElements(teamMembers));
+        return teamMembers.size();
     }
 
-    public void clickSeeMoreHistory() {
-        LoggerUtil.info("Clicking See More History button.");
-        btnSeeMoreHistory.click();
-    }
-
-    public boolean isHistoryDetailsVisible() {
-        LoggerUtil.info("Checking if History Details are visible.");
-        return historyDetails.isDisplayed();
-    }
-
-    public void clickContactUsLink() {
-        LoggerUtil.info("Clicking Contact Us link from About page.");
-        lnkContactUs.click();
-    }
-
-    public boolean isTestimonialSectionDisplayed() {
-        LoggerUtil.info("Checking if Testimonial section is displayed.");
-        return testimonialSection.isDisplayed();
+    public String getTeamMemberName(int index) {
+        wait.until(ExpectedConditions.visibilityOfAllElements(teamMembers));
+        if (index < teamMembers.size()) {
+            return teamMembers.get(index).getText();
+        } else {
+            throw new IndexOutOfBoundsException("Team member index out of range");
+        }
     }
 }

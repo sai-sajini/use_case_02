@@ -10,110 +10,118 @@ import java.util.List;
 public class ProductsPage {
     private WebDriver driver;
 
-    @FindBy(xpath = "//h1[contains(text(),'Products')]")
-    private WebElement productsHeader;
+    @FindBy(id = "products-title")
+    private WebElement productsTitle;
 
-    @FindBy(id = "searchBox")
+    @FindBy(id = "search-box")
     private WebElement searchBox;
 
-    @FindBy(id = "searchBtn")
-    private WebElement searchBtn;
+    @FindBy(id = "search-button")
+    private WebElement searchButton;
 
-    @FindBy(id = "sortDropdown")
-    private WebElement sortDropdown;
-
-    @FindBy(css = "table#productsTable tbody tr")
+    @FindBy(xpath = "//table[@id='products-table']/tbody/tr")
     private List<WebElement> productRows;
 
-    @FindBy(css = "button.add-product")
-    private WebElement addProductBtn;
+    @FindBy(xpath = "//select[@id='category-dropdown']")
+    private WebElement categoryDropdown;
 
-    @FindBy(id = "productName")
-    private WebElement productNameInput;
+    @FindBy(id = "add-product-button")
+    private WebElement addProductButton;
 
-    @FindBy(id = "productPrice")
-    private WebElement productPriceInput;
+    @FindBy(id = "product-name")
+    private WebElement inputProductName;
 
-    @FindBy(id = "productCategory")
-    private WebElement productCategoryDropdown;
+    @FindBy(id = "product-desc")
+    private WebElement inputProductDesc;
 
-    @FindBy(id = "productUpload")
-    private WebElement productUploadInput;
+    @FindBy(id = "product-price")
+    private WebElement inputProductPrice;
 
-    @FindBy(id = "submitProduct")
-    private WebElement submitProductBtn;
+    @FindBy(xpath = "//select[@id='product-category']")
+    private WebElement selectProductCategory;
 
-    @FindBy(id = "productFormAlert")
-    private WebElement productFormAlert;
+    @FindBy(css = "button.submit-product")
+    private WebElement submitProductButton;
 
-    @FindBy(css = "button.delete-product")
-    private List<WebElement> deleteProductBtns;
+    @FindBy(xpath = "//span[@id='product-upload-label']")
+    private WebElement productUploadLabel;
+
+    @FindBy(xpath = "//input[@type='file' and @id='product-file-upload']")
+    private WebElement fileUploadInput;
+
+    @FindBy(xpath = "//div[@id='drag-drop-area']")
+    private WebElement dragDropArea;
+
+    @FindBy(xpath = "//div[@id='message-box']")
+    private WebElement messageBox;
 
     public ProductsPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
     }
 
-    public boolean isProductsHeaderDisplayed() {
-        return productsHeader.isDisplayed();
+    public boolean isProductsTitleDisplayed() {
+        return productsTitle.isDisplayed();
     }
 
     public void searchProduct(String productName) {
         searchBox.clear();
         searchBox.sendKeys(productName);
-        searchBtn.click();
+        searchButton.click();
     }
 
-    public void sortProductsBy(String criteria) {
-        new Select(sortDropdown).selectByVisibleText(criteria);
-    }
-
-    public int getProductCount() {
+    public int getProductsCount() {
         return productRows.size();
     }
 
-    public boolean isProductVisible(String productName) {
+    public void selectCategory(String category) {
+        Select select = new Select(categoryDropdown);
+        select.selectByVisibleText(category);
+    }
+
+    public void clickAddProductButton() {
+        addProductButton.click();
+    }
+
+    public void enterProductDetails(String name, String desc, String price, String category) {
+        inputProductName.clear();
+        inputProductName.sendKeys(name);
+        inputProductDesc.clear();
+        inputProductDesc.sendKeys(desc);
+        inputProductPrice.clear();
+        inputProductPrice.sendKeys(price);
+        Select select = new Select(selectProductCategory);
+        select.selectByVisibleText(category);
+    }
+
+    public void submitProduct() {
+        submitProductButton.click();
+    }
+
+    public String getMessageBoxText() {
+        return messageBox.getText();
+    }
+
+    public void uploadProductFile(String absoluteFilePath) {
+        fileUploadInput.sendKeys(absoluteFilePath);
+    }
+
+    public void dragAndDropProductFile(String absoluteFilePath) {
+        // Use Selenium's drag and drop
+        org.openqa.selenium.interactions.Actions actions = new org.openqa.selenium.interactions.Actions(driver);
+        actions.dragAndDrop(fileUploadInput, dragDropArea).perform();
+    }
+
+    public boolean isProductPresent(String productName) {
         for (WebElement row : productRows) {
-            if (row.getText().contains(productName)) return true;
+            if (row.getText().contains(productName)) {
+                return true;
+            }
         }
         return false;
     }
 
-    public void clickAddProduct() {
-        addProductBtn.click();
-    }
-
-    public void enterProductDetails(String name, String price, String category) {
-        productNameInput.clear();
-        productNameInput.sendKeys(name);
-        productPriceInput.clear();
-        productPriceInput.sendKeys(price);
-        new Select(productCategoryDropdown).selectByVisibleText(category);
-    }
-
-    public void uploadProductImage(String filePath) {
-        productUploadInput.sendKeys(filePath);
-    }
-
-    public void submitProductForm() {
-        submitProductBtn.click();
-    }
-
-    public String getProductFormAlertText() {
-        return productFormAlert.getText();
-    }
-
-    public void deleteProductByName(String productName) {
-        for (WebElement row : productRows) {
-            if (row.getText().contains(productName)) {
-                WebElement deleteBtn = row.findElement(org.openqa.selenium.By.cssSelector("button.delete-product"));
-                deleteBtn.click();
-                break;
-            }
-        }
-    }
-
-    public boolean isProductDeleted(String productName) {
-        return !isProductVisible(productName);
+    public boolean isProductUploadLabelDisplayed() {
+        return productUploadLabel.isDisplayed();
     }
 }

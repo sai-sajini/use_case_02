@@ -1,28 +1,31 @@
-Feature: Products Page
-  Products page displays a list of products and allows user actions such as search, filter, add to cart, and submit order.
+Feature: Products Management
+  As a user
+  I want to be able to view, search, and add products
+  So that I can manage the products easily
 
   Background:
-    Given user is on the Home page
-    And navigates to Products page
+    Given I am on the products page
 
-  Scenario: Positive - Search for available product and add to cart
-    When user searches for product "Laptop" in the search box
-    And filters by category "Electronics"
-    And adds product "Laptop Model X" to the cart
-    Then product "Laptop Model X" should be listed in the cart
-    And order button should be enabled
+  Scenario: User views the products list
+    When I see the products table
+    Then the products table should be displayed
 
-  Scenario: Negative - Search for unavailable product
-    When user searches for product "RandomNonExistingProduct" in the search box
-    Then the products list should display "No products found"
-    And add to cart button should not be enabled
+  Scenario: User searches for a valid product
+    When I search for product "Laptop"
+    Then I should see product "Laptop" in the results
 
-  Scenario: Positive - Submit order for multiple products
-    When user adds product "Laptop Model X" to the cart
-    And adds product "Mouse Pro" to the cart
-    And clicks order button
-    Then confirmation message should display "Order submitted successfully!"
+  Scenario: User searches for an invalid product
+    When I search for product "XYZInvalid"
+    Then I should see a message "No products found"
 
-  Scenario: Negative - Attempt order with empty cart
-    When user clicks order button
-    Then error message should display "Cart is empty. Please add products before ordering."
+  Scenario: User adds a new product successfully
+    When I click on Add Product button
+    And I enter product details from config
+    And I submit the new product
+    Then I should see the new product in the products table
+
+  Scenario: User adds a product with missing required fields
+    When I click on Add Product button
+    And I enter incomplete product details
+    And I submit the new product
+    Then I should see an error message "All fields are required"

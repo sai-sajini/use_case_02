@@ -4,7 +4,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
@@ -13,33 +12,33 @@ public class ContactPage {
     private WebDriver driver;
     private WebDriverWait wait;
 
-    @FindBy(id = "name")
+    @FindBy(id = "contact_name")
     private WebElement nameInput;
 
-    @FindBy(id = "email")
+    @FindBy(id = "contact_email")
     private WebElement emailInput;
 
-    @FindBy(id = "message")
-    private WebElement messageTextarea;
+    @FindBy(id = "contact_message")
+    private WebElement messageInput;
 
-    @FindBy(id = "fileUpload")
+    @FindBy(id = "contact_file")
     private WebElement fileUploadInput;
 
-    @FindBy(id = "dragDropZone")
-    private WebElement dragDropZone;
-
-    @FindBy(id = "submitButton")
+    @FindBy(id = "contact_submit")
     private WebElement submitButton;
 
-    @FindBy(id = "successMessage")
+    @FindBy(css = ".success-message")
     private WebElement successMessage;
 
-    @FindBy(id = "errorMessage")
+    @FindBy(css = ".error-message")
     private WebElement errorMessage;
+
+    @FindBy(id = "drag-drop-area")
+    private WebElement dragDropArea;
 
     public ContactPage(WebDriver driver) {
         this.driver = driver;
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(15));
         PageFactory.initElements(driver, this);
     }
 
@@ -56,9 +55,9 @@ public class ContactPage {
     }
 
     public void enterMessage(String message) {
-        wait.until(ExpectedConditions.visibilityOf(messageTextarea));
-        messageTextarea.clear();
-        messageTextarea.sendKeys(message);
+        wait.until(ExpectedConditions.visibilityOf(messageInput));
+        messageInput.clear();
+        messageInput.sendKeys(message);
     }
 
     public void uploadFile(String filePath) {
@@ -67,11 +66,8 @@ public class ContactPage {
     }
 
     public void dragAndDropFile(String filePath) {
-        // Drag & drop usually requires an external tool as sendKeys does not simulate drag-drop file upload
-        // This is a placeholder. In real application, use Robot class or a JS executor for actual drag-drop file upload
-        Actions actions = new Actions(driver);
-        actions.moveToElement(dragDropZone).click().perform();
-        fileUploadInput.sendKeys(filePath);
+        // Selenium does not support HTML5 drag and drop natively, so as an example:
+        uploadFile(filePath);
     }
 
     public void clickSubmit() {
@@ -79,25 +75,9 @@ public class ContactPage {
         submitButton.click();
     }
 
-    public boolean isSuccessMessageDisplayed() {
-        try {
-            return successMessage.isDisplayed() && successMessage.getText().trim().length() > 0;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     public String getSuccessMessage() {
         wait.until(ExpectedConditions.visibilityOf(successMessage));
         return successMessage.getText();
-    }
-
-    public boolean isErrorMessageDisplayed() {
-        try {
-            return errorMessage.isDisplayed() && errorMessage.getText().trim().length() > 0;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     public String getErrorMessage() {
@@ -105,11 +85,7 @@ public class ContactPage {
         return errorMessage.getText();
     }
 
-    public boolean isFormDisplayed() {
-        try {
-            return nameInput.isDisplayed() && emailInput.isDisplayed() && messageTextarea.isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
+    public boolean isAt() {
+        return wait.until(ExpectedConditions.visibilityOf(submitButton)).isDisplayed();
     }
 }
