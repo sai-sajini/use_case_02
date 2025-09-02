@@ -1,84 +1,98 @@
 package com.yourcompany.steps;
 
 import com.yourcompany.pages.HomePage;
-import com.yourcompany.pages.NavigationBar;
 import com.yourcompany.utils.ConfigReader;
 import com.yourcompany.utils.LoggerUtil;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.openqa.selenium.WebDriver;
-import com.yourcompany.utils.DriverManager;
-import org.testng.Assert;
+import org.junit.Assert;
+import org.apache.logging.log4j.Logger;
 
 public class HomeSteps {
-    private WebDriver driver = DriverManager.getDriver();
-    private HomePage homePage = new HomePage(driver);
-    private NavigationBar navigationBar = new NavigationBar(driver);
+    private HomePage homePage;
+    private static final Logger logger = LoggerUtil.getLogger(HomeSteps.class);
 
-    @Given("User is on the Home page")
+    public HomeSteps() {
+        homePage = new HomePage();
+    }
+
+    @Given("^User is on the Home Page$")
     public void user_is_on_the_home_page() {
-        LoggerUtil.info("Navigating to Home Page");
-        driver.get(ConfigReader.getProperty("baseURL"));
-        Assert.assertTrue(homePage.isLoaded(), "Home Page did not load properly");
+        String url = ConfigReader.getProperty("baseURL");
+        homePage.navigateTo(url);
+        logger.info("Navigated to Home Page: " + url);
     }
 
-    @Then("Home page title should be displayed as {string}")
-    public void home_page_title_should_be_displayed_as(String expectedTitle) {
-        String title = homePage.getTitle();
-        LoggerUtil.info("Actual title: " + title);
-        Assert.assertEquals(title, expectedTitle, "Home page title mismatch");
-    }
-
-    @Then("Welcome message should be {string}")
-    public void welcome_message_should_be(String expectedMsg) {
-        String actualMsg = homePage.getWelcomeMessage();
-        LoggerUtil.info("Welcome message: " + actualMsg);
-        Assert.assertEquals(actualMsg, expectedMsg, "Welcome message mismatch");
-    }
-
-    @When("User clicks on the login button")
-    public void user_clicks_on_the_login_button() {
-        LoggerUtil.info("Clicking login button");
+    @When("^User clicks the Login button$")
+    public void user_clicks_the_login_button() {
         homePage.clickLoginButton();
+        logger.info("Clicked Login button");
     }
 
-    @Then("User should be redirected to the login page")
-    public void user_should_be_redirected_to_the_login_page() {
-        boolean redirected = homePage.isRedirectedToLogin();
-        LoggerUtil.info("User redirected to login page: " + redirected);
-        Assert.assertTrue(redirected, "User was not redirected to login page");
+    @When("^User enters username and password$")
+    public void user_enters_username_and_password() {
+        String username = ConfigReader.getProperty("username");
+        String password = ConfigReader.getProperty("password");
+        homePage.enterUsername(username);
+        homePage.enterPassword(password);
+        logger.info("Entered username and password");
     }
 
-    @When("User navigates to About page using the navigation bar")
-    public void user_navigates_to_about_page_using_the_navigation_bar() {
-        LoggerUtil.info("Navigating to About page via navigation bar");
-        navigationBar.clickAbout();
+    @When("^User submits the login form$")
+    public void user_submits_the_login_form() {
+        homePage.submitLogin();
+        logger.info("Login form submitted");
     }
 
-    @Then("About page should be displayed")
-    public void about_page_should_be_displayed() {
-        LoggerUtil.info("Verifying About page is displayed");
-        Assert.assertTrue(navigationBar.isAboutPageActive(), "About page is not active");
+    @Then("^User should see the welcome message$")
+    public void user_should_see_the_welcome_message() {
+        boolean messageVisible = homePage.isWelcomeMessageDisplayed();
+        logger.info("Checked for welcome message: " + messageVisible);
+        Assert.assertTrue(messageVisible);
     }
 
-    @Then("Major UI components should be visible on the Home page")
-    public void major_ui_components_should_be_visible_on_home_page() {
-        Assert.assertTrue(homePage.isBannerVisible(), "Home banner not visible");
-        Assert.assertTrue(homePage.isProductSectionVisible(), "Product section not visible");
-        Assert.assertTrue(homePage.isContactLinkVisible(), "Contact link not visible");
-        LoggerUtil.info("All major UI components are visible");
+    @When("^User performs a search for product '(.+)'$")
+    public void user_performs_a_search_for_product(String product) {
+        homePage.enterSearchValue(product);
+        homePage.clickSearchButton();
+        logger.info("User searched for product: " + product);
     }
 
-    @When("User performs drag and drop of the banner image")
-    public void user_performs_drag_and_drop_of_banner_image() {
-        LoggerUtil.info("Performing drag and drop on banner image");
-        homePage.dragAndDropBannerImage();
+    @Then("^Search result for '(.+)' should be displayed$")
+    public void search_result_should_be_displayed(String product) {
+        boolean isDisplayed = homePage.isProductSearchResultDisplayed(product);
+        logger.info("Search result for '" + product + "' displayed: " + isDisplayed);
+        Assert.assertTrue(isDisplayed);
     }
 
-    @Then("Banner image should be dropped at the specified location")
-    public void banner_image_should_be_dropped_at_specified_location() {
-        Assert.assertTrue(homePage.isBannerImageDropped(), "Banner image was not dropped at correct location");
-        LoggerUtil.info("Banner image dropped successfully");
+    @When("^User tries to login with invalid credentials$")
+    public void user_tries_to_login_with_invalid_credentials() {
+        String invalidUser = ConfigReader.getProperty("invalidUsername");
+        String invalidPass = ConfigReader.getProperty("invalidPassword");
+        homePage.enterUsername(invalidUser);
+        homePage.enterPassword(invalidPass);
+        homePage.submitLogin();
+        logger.info("Attempted login with invalid credentials");
+    }
+
+    @Then("^Error message should be displayed$")
+    public void error_message_should_be_displayed() {
+        boolean isError = homePage.isLoginErrorDisplayed();
+        logger.info("Error message displayed: " + isError);
+        Assert.assertTrue(isError);
+    }
+
+    @When("^User navigates to About page from Home$")
+    public void user_navigates_to_about_page_from_home() {
+        homePage.clickAboutLink();
+        logger.info("Navigated to About page from Home");
+    }
+
+    @Then("^About page is opened$")
+    public void about_page_is_opened() {
+        boolean isAboutOpened = homePage.isAtAboutPage();
+        logger.info("About page opened: " + isAboutOpened);
+        Assert.assertTrue(isAboutOpened);
     }
 }

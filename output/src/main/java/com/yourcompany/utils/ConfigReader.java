@@ -5,51 +5,51 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigReader {
-    private static Properties properties = new Properties();
-    private static final String CONFIG_PATH = "src/test/resources/config/config.properties";
-    private static boolean isLoaded = false;
+    private static Properties properties;
+    private static final String CONFIG_FILE_PATH = "src/test/resources/config/config.properties";
 
-    private ConfigReader() {}
+    static {
+        loadProperties();
+    }
 
-    public static void loadConfig() {
-        if (isLoaded)
-            return;
-        try (FileInputStream fis = new FileInputStream(CONFIG_PATH)) {
+    private static void loadProperties() {
+        properties = new Properties();
+        try (FileInputStream fis = new FileInputStream(CONFIG_FILE_PATH)) {
             properties.load(fis);
-            isLoaded = true;
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load config.properties: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to load configuration from " + CONFIG_FILE_PATH, e);
         }
     }
 
     public static String getProperty(String key) {
-        if (!isLoaded) {
-            loadConfig();
-        }
-        String value = properties.getProperty(key);
-        if (value == null) {
-            throw new RuntimeException("Property not found: " + key);
-        }
-        return value;
+        return properties.getProperty(key);
     }
 
     public static String getBrowser() {
-        return getProperty("browser");
+        return properties.getProperty("browser");
     }
 
     public static String getBaseURL() {
-        return getProperty("baseURL");
+        return properties.getProperty("baseURL");
     }
 
     public static String getUsername() {
-        return getProperty("username");
+        return properties.getProperty("username");
     }
 
     public static String getPassword() {
-        return getProperty("password");
+        return properties.getProperty("password");
+    }
+
+    public static String getReportPath() {
+        return properties.getProperty("reportPath");
+    }
+
+    public static String getLogPath() {
+        return properties.getProperty("logPath");
     }
 
     public static String getTestDataPath() {
-        return getProperty("testDataPath");
+        return properties.getProperty("testDataPath");
     }
 }

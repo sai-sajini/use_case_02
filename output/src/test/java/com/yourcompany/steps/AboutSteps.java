@@ -3,66 +3,65 @@ package com.yourcompany.steps;
 import com.yourcompany.pages.AboutPage;
 import com.yourcompany.utils.ConfigReader;
 import com.yourcompany.utils.LoggerUtil;
-import io.cucumber.java.en.*;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.When;
+import io.cucumber.java.en.Then;
+import org.openqa.selenium.WebDriver;
 import org.junit.Assert;
-import org.apache.logging.log4j.Logger;
 
 public class AboutSteps {
-    private AboutPage aboutPage = new AboutPage();
-    private static final Logger logger = LoggerUtil.getLogger(AboutSteps.class);
+    private WebDriver driver;
+    private AboutPage aboutPage;
+    private LoggerUtil logger = LoggerUtil.getInstance();
 
-    @Given("User is on the About page")
-    public void user_is_on_about_page() {
-        String aboutUrl = ConfigReader.getProperty("aboutPageUrl");
-        aboutPage.navigateToAboutPage(aboutUrl);
+    public AboutSteps() {
+        this.driver = LoggerUtil.getDriver();
+        this.aboutPage = new AboutPage(driver);
+    }
+
+    @Given("User navigates to the About page")
+    public void user_navigates_to_about_page() {
+        String aboutUrl = ConfigReader.getProperty("aboutURL");
+        driver.get(aboutUrl);
         logger.info("Navigated to About page: " + aboutUrl);
     }
 
-    @When("User verifies the main header is displayed")
-    public void user_verifies_main_header_displayed() {
-        Assert.assertTrue("Main header is not displayed", aboutPage.isHeaderDisplayed());
-        logger.info("Verified main header is displayed on About page.");
+    @Then("The About header should be displayed")
+    public void about_header_should_be_displayed() {
+        Assert.assertTrue("About header is not displayed", aboutPage.isAboutHeaderDisplayed());
+        logger.info("Verified About header is displayed");
     }
 
-    @Then("Company information should be visible")
-    public void company_information_should_be_visible() {
-        Assert.assertTrue("Company info section not visible", aboutPage.isCompanyInfoVisible());
-        logger.info("Verified company information is visible.");
+    @Then("The company description should be correct")
+    public void company_description_should_be_correct() {
+        String expectedDescription = ConfigReader.getProperty("aboutDescription");
+        Assert.assertEquals("Company description mismatch", expectedDescription, aboutPage.getCompanyDescription());
+        logger.info("Company description matched expected value");
     }
 
-    @When("User clicks on the team section")
-    public void user_clicks_team_section() {
+    @When("User clicks on the Team section")
+    public void user_clicks_on_team_section() {
         aboutPage.clickTeamSection();
-        logger.info("Clicked on Team section.");
+        logger.info("Clicked on Team section");
     }
 
-    @Then("Team member list should be displayed")
-    public void team_member_list_displayed() {
-        Assert.assertTrue("Team member list is not displayed", aboutPage.isTeamListDisplayed());
-        logger.info("Team member list is displayed.");
+    @Then("The Team section should be visible")
+    public void team_section_should_be_visible() {
+        Assert.assertTrue("Team section is not visible", aboutPage.isTeamSectionDisplayed());
+        logger.info("Team section is visible");
     }
 
-    @When("User enters {string} in the search box")
-    public void user_enters_text_in_search_box(String name) {
-        aboutPage.enterSearchText(name);
-        logger.info("Entered text in search box: " + name);
+    @When("User attempts to access About with invalid URL")
+    public void user_accesses_about_with_invalid_url() {
+        String invalidUrl = ConfigReader.getProperty("invalidAboutURL");
+        driver.get(invalidUrl);
+        logger.info("Navigated to invalid About URL: " + invalidUrl);
     }
 
-    @Then("Only {string} should be shown in the team list")
-    public void only_name_should_be_shown_in_team_list(String name) {
-        Assert.assertTrue("Expected team member not shown", aboutPage.isOnlyThisTeamMemberVisible(name));
-        logger.info("Verified only " + name + " is shown in team list.");
+    @Then("An error message should be shown on About page")
+    public void error_message_should_be_shown_on_about_page() {
+        Assert.assertTrue("Error message not displayed for invalid About page", aboutPage.isErrorMessageDisplayed());
+        logger.info("Error message is shown on About page for negative scenario");
     }
 
-    @When("User submits an invalid search {string}")
-    public void user_submits_invalid_search(String name) {
-        aboutPage.enterSearchText(name);
-        logger.info("Entered invalid search: " + name);
-    }
-
-    @Then("Error message \"No team member found.\" should be displayed")
-    public void error_message_should_be_displayed() {
-        Assert.assertTrue("Error message not displayed", aboutPage.isNoTeamMemberFoundMessageDisplayed());
-        logger.info("Verified 'No team member found.' error message displayed.");
-    }
 }

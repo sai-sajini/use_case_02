@@ -7,23 +7,23 @@ import com.aventstack.extentreports.reporter.configuration.Theme;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ExtentReportManager {
+public class ExtentReportUtil {
     private static ExtentReports extent;
     private static ExtentTest test;
-    private static String reportFilePath = System.getProperty("user.dir") + "/test-output/ExtentReport_" +
-            new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".html";
+    private static ExtentHtmlReporter htmlReporter;
+    private static final String reportFilePath = System.getProperty("user.dir") + "/reports/ExtentReport_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".html";
 
     public static void initReports() {
         if (extent == null) {
-            ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(reportFilePath);
-            htmlReporter.config().setDocumentTitle("Automation Test Report");
-            htmlReporter.config().setReportName("Selenium UI Automation");
+            htmlReporter = new ExtentHtmlReporter(reportFilePath);
             htmlReporter.config().setTheme(Theme.STANDARD);
-
+            htmlReporter.config().setDocumentTitle("Automation Test Report");
+            htmlReporter.config().setReportName("Selenium Cucumber Test Report");
             extent = new ExtentReports();
             extent.attachReporter(htmlReporter);
-            extent.setSystemInfo("OS", System.getProperty("os.name"));
-            extent.setSystemInfo("Java Version", System.getProperty("java.version"));
+            extent.setSystemInfo("Test Environment", ConfigReader.get("environment"));
+            extent.setSystemInfo("Browser", ConfigReader.get("browser"));
+            extent.setSystemInfo("Base URL", ConfigReader.get("baseURL"));
         }
     }
 
@@ -40,9 +40,5 @@ public class ExtentReportManager {
         if (extent != null) {
             extent.flush();
         }
-    }
-
-    public static String getReportFilePath() {
-        return reportFilePath;
     }
 }

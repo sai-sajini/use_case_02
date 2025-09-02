@@ -1,29 +1,27 @@
-Feature: Home page functionality
-  As a user
-  I want to interact with the Home page
-  So that I can verify its major components and flows
+Feature: Home page functionalities
 
   Background:
-    Given I am on the Home page
+    Given the user launches the application
+    And the user is on the Home page
 
-  Scenario: Positive Home page login flow
-    When I enter valid username and password
-    And I click on the login button
-    Then I should see the welcome message on the Home page
-    And I should see the Navigation Bar displayed
+  Scenario: Successful login with valid credentials
+    When the user enters valid username and password
+    And clicks the login button
+    Then the user should be navigated to the Dashboard
 
-  Scenario: Negative Home page login flow with invalid credentials
-    When I enter invalid username and password
-    And I click on the login button
-    Then I should see an error message displayed
-    And I should NOT see the welcome message on the Home page
+  Scenario: Attempt login with invalid credentials
+    When the user enters invalid username and password
+    And clicks the login button
+    Then an error message should be displayed
 
-  Scenario: Home page navigation to Products page through Navigation Bar
-    When I click on the Products link in the Navigation Bar
-    Then I should be redirected to the Products page
-    And I should see the Products page title displayed
+  Scenario: Navigate to About page from Home
+    When the user clicks on the About link
+    Then the About page should be displayed
 
-  Scenario: Home page navigation to About page through Navigation Bar
-    When I click on the About link in the Navigation Bar
-    Then I should be redirected to the About page
-    And I should see the About page title displayed
+  Scenario: Navigate to Products page from Home
+    When the user clicks on the Products menu
+    Then the Products page should be displayed
+
+  Scenario: Logout from home page
+    When the user clicks the logout button
+    Then the user should be navigated to the Login screen

@@ -8,83 +8,87 @@ import org.openqa.selenium.interactions.Actions;
 
 public class HomePage {
     private WebDriver driver;
+    private Actions actions;
 
-    @FindBy(id = "loginBtn")
-    private WebElement loginButton;
+    @FindBy(xpath = "//a[text()='Login']")
+    private WebElement loginLink;
 
-    @FindBy(id = "username")
-    private WebElement usernameInput;
+    @FindBy(id = "search-input")
+    private WebElement searchInput;
 
-    @FindBy(id = "password")
-    private WebElement passwordInput;
+    @FindBy(id = "search-btn")
+    private WebElement searchButton;
 
-    @FindBy(css = "#rememberMe")
-    private WebElement rememberMeCheckbox;
+    @FindBy(xpath = "//a[text()='Contact']")
+    private WebElement contactLink;
 
-    @FindBy(css = "#welcomeBanner")
-    private WebElement welcomeBanner;
+    @FindBy(xpath = "//a[text()='About']")
+    private WebElement aboutLink;
 
-    @FindBy(xpath = "//div[@id='dragSource']")
+    @FindBy(xpath = "//a[text()='Products']")
+    private WebElement productsLink;
+
+    @FindBy(xpath = "//input[@type='file']")
+    private WebElement fileUploadInput;
+
+    @FindBy(id = "upload-btn")
+    private WebElement uploadButton;
+
+    @FindBy(id = "drag-source")
     private WebElement dragSource;
 
-    @FindBy(xpath = "//div[@id='dropTarget']")
+    @FindBy(id = "drop-target")
     private WebElement dropTarget;
-
-    @FindBy(id = "logoutBtn")
-    private WebElement logoutButton;
-
-    @FindBy(id = "loginError")
-    private WebElement loginErrorMsg;
 
     public HomePage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
-    }
-
-    public boolean isWelcomeBannerDisplayed() {
-        return welcomeBanner.isDisplayed();
-    }
-
-    public void enterUsername(String username) {
-        usernameInput.clear();
-        usernameInput.sendKeys(username);
-    }
-
-    public void enterPassword(String password) {
-        passwordInput.clear();
-        passwordInput.sendKeys(password);
-    }
-
-    public void setRememberMe(boolean shouldCheck) {
-        if (rememberMeCheckbox.isSelected() != shouldCheck) {
-            rememberMeCheckbox.click();
-        }
+        this.actions = new Actions(driver);
     }
 
     public void clickLogin() {
-        loginButton.click();
+        loginLink.click();
     }
 
-    public boolean isLogoutButtonDisplayed() {
-        return logoutButton.isDisplayed();
+    public void enterSearchKeyword(String keyword) {
+        searchInput.clear();
+        searchInput.sendKeys(keyword);
     }
 
-    public void clickLogout() {
-        if (logoutButton.isDisplayed()) {
-            logoutButton.click();
-        }
+    public void clickSearch() {
+        searchButton.click();
     }
 
-    public boolean isLoginErrorDisplayed() {
-        try {
-            return loginErrorMsg.isDisplayed();
-        } catch(Exception e) {
-            return false;
-        }
+    public void goToContactPage() {
+        contactLink.click();
     }
 
-    public void dragAndDropWelcomeBanner() {
-        Actions actions = new Actions(driver);
+    public void goToAboutPage() {
+        aboutLink.click();
+    }
+
+    public void goToProductsPage() {
+        productsLink.click();
+    }
+
+    public void uploadFile(String filePath) {
+        fileUploadInput.sendKeys(filePath);
+        uploadButton.click();
+    }
+
+    public void performDragAndDrop() {
         actions.dragAndDrop(dragSource, dropTarget).perform();
+    }
+
+    public boolean isLoginLinkDisplayed() {
+        return loginLink.isDisplayed();
+    }
+
+    public boolean isSearchInputDisplayed() {
+        return searchInput.isDisplayed();
+    }
+
+    public boolean isContactLinkDisplayed() {
+        return contactLink.isDisplayed();
     }
 }

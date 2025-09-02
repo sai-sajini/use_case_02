@@ -3,113 +3,90 @@ package com.yourcompany.steps;
 import com.yourcompany.pages.ProductsPage;
 import com.yourcompany.utils.ConfigReader;
 import com.yourcompany.utils.LoggerUtil;
-import io.cucumber.java.en.*;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 
-import java.util.List;
-import java.util.Map;
-
 public class ProductsSteps {
+    private static final Logger logger = LoggerUtil.getLogger(ProductsSteps.class);
     ProductsPage productsPage = new ProductsPage();
-    Logger logger = LoggerUtil.getLogger(ProductsSteps.class);
+    String addedProductName = "";
 
-    @Given("user is on the Products page")
+    @Given("User is on the Products page")
     public void user_is_on_products_page() {
-        logger.info("Navigating to Products page");
-        productsPage.goToProductsPage();
-        Assert.assertTrue("Products page did not load!", productsPage.isProductsPageLoaded());
+        String baseUrl = ConfigReader.getProperty("baseURL");
+        productsPage.navigateToProductsPage(baseUrl);
+        logger.info("Navigated to Products page.");
     }
 
-    @When("user searches for a product with name {string}")
-    public void user_searches_for_product(String productName) {
-        logger.info("Searching for product: " + productName);
-        productsPage.enterSearchText(productName);
-        productsPage.clickSearchButton();
+    @When("User searches for product {string}")
+    public void user_searches_for_product(String product) {
+        productsPage.enterSearchQuery(product);
+        productsPage.clickOnSearchButton();
+        logger.info("Searched for product: {}", product);
     }
 
-    @Then("the product titled {string} should be displayed in the results")
-    public void product_should_be_displayed(String expectedProductName) {
-        boolean found = productsPage.isProductInResults(expectedProductName);
-        logger.info("Product display verification for: " + expectedProductName);
-        Assert.assertTrue("Product not found in results!", found);
+    @Then("Product results should contain {string}")
+    public void product_results_should_contain(String product) {
+        boolean result = productsPage.isProductDisplayed(product);
+        logger.info("Checking search result for product: {}. Found: {}", product, result);
+        Assert.assertTrue("Product not found in the results", result);
     }
 
-    @Then("the following products should appear in the results:")
-    public void products_should_appear(io.cucumber.datatable.DataTable dataTable) {
-        List<String> expectedProducts = dataTable.asList();
-        for (String prod : expectedProducts) {
-            logger.info("Verifying product in results: " + prod);
-            Assert.assertTrue(productsPage.isProductInResults(prod));
-        }
+    @When("User adds product {string} to cart")
+    public void user_adds_product_to_cart(String product) {
+        productsPage.addProductToCart(product);
+        addedProductName = product;
+        logger.info("Added product to cart: {}", product);
     }
 
-    @When("user adds product with name {string} to cart")
-    public void user_adds_product_to_cart(String productName) {
-        logger.info("Adding product to cart: " + productName);
-        productsPage.addProductToCart(productName);
-        Assert.assertTrue("Product was not added to cart!", productsPage.isProductInCart(productName));
+    @Then("Product {string} should appear in the shopping cart")
+    public void product_should_appear_in_cart(String product) {
+        boolean result = productsPage.isProductInCart(product);
+        logger.info("Checking if product is in cart: {} => {}", product, result);
+        Assert.assertTrue("Product was not added to the cart", result);
     }
 
-    @Then("the cart should contain product with name {string}")
-    public void cart_should_contain_product(String productName) {
-        logger.info("Verifying product in cart: " + productName);
-        Assert.assertTrue(productsPage.isProductInCart(productName));
+    @When("User tries to add out of stock product {string}")
+    public void user_tries_to_add_out_of_stock_product(String product) {
+        productsPage.addProductToCart(product);
+        logger.info("Attempted to add out of stock product: {}", product);
     }
 
-    @When("user tries to add an unavailable product to cart")
-    public void user_adds_unavailable_product() {
-        String unavailableProduct = ConfigReader.get("unavailableProductName");
-        logger.info("Trying to add unavailable product: " + unavailableProduct);
-        productsPage.addProductToCart(unavailableProduct);
+    @Then("User should see an out of stock error message")
+    public void out_of_stock_error_message() {
+        boolean isError = productsPage.isOutOfStockMessageDisplayed();
+        logger.info("Verifying out-of-stock error message. Displayed: {}", isError);
+        Assert.assertTrue("Out of stock message not displayed", isError);
     }
 
-    @Then("an error message {string} should be displayed")
-    public void error_message_should_be_displayed(String errorMsg) {
-        String actualError = productsPage.getErrorMessage();
-        logger.info("Verifying error message: Expecting: " + errorMsg + ", Actual: " + actualError);
-        Assert.assertEquals(errorMsg, actualError);
+    @And("User applies filter {string}")
+    public void user_applies_filter(String filterOption) {
+        productsPage.selectFilterOption(filterOption);
+        logger.info("Filter applied: {}", filterOption);
     }
 
-    @When("user filters products by category {string}")
-    public void user_filters_products_by_category(String category) {
-        logger.info("Filtering products by category: " + category);
-        productsPage.selectProductCategory(category);
+    @Then("Product list updates according to the filter {string}")
+    public void product_list_updates_according_to_filter(String filterOption) {
+        boolean filteredCorrectly = productsPage.isProductListFiltered(filterOption);
+        logger.info("Product list filtered with option '{}': {}", filterOption, filteredCorrectly);
+        Assert.assertTrue("Product list not filtered correctly", filteredCorrectly);
     }
 
-    @Then("only products from category {string} should be visible")
-    public void only_category_products_visible(String category) {
-        List<String> visibleProducts = productsPage.getVisibleProductCategories();
-        for (String prodCat : visibleProducts) {
-            logger.info("Visible product category: " + prodCat);
-            Assert.assertEquals(category, prodCat);
-        }
+    @When("User uploads product import file")
+    public void user_uploads_product_import_file() {
+        String filePath = ConfigReader.getProperty("productUploadFile");
+        productsPage.uploadProductFile(filePath);
+        logger.info("Product import file uploaded: {}", filePath);
     }
 
-    @When("user uploads product test data file")
-    public void user_uploads_testdata_file() {
-        String filePath = ConfigReader.get("productsTestDataPath");
-        logger.info("Uploading product data file: " + filePath);
-        productsPage.uploadProductDataFile(filePath);
-    }
-
-    @Then("the product list should update accordingly")
-    public void product_list_should_update() {
-        boolean updated = productsPage.isProductListUpdatedAfterUpload();
-        logger.info("Verifying product list update after file upload");
-        Assert.assertTrue("Product list did not update!", updated);
-    }
-
-    @When("user performs drag and drop of product {string} to cart")
-    public void user_drags_product_to_cart(String productName) {
-        logger.info("Dragging and dropping product to cart: " + productName);
-        productsPage.dragProductToCart(productName);
-    }
-
-    @Then("drag and drop confirmation for product {string} should appear")
-    public void drag_and_drop_confirmation_should_appear(String productName) {
-        boolean confirmed = productsPage.isDragAndDropConfirmed(productName);
-        logger.info("Drag and drop confirmation for: " + productName);
-        Assert.assertTrue("Drag and Drop confirmation failed", confirmed);
+    @Then("Products should be imported successfully")
+    public void products_should_be_imported_successfully() {
+        boolean importStatus = productsPage.isImportSuccessMessageDisplayed();
+        logger.info("Products import success status: {}", importStatus);
+        Assert.assertTrue("Products not imported successfully", importStatus);
     }
 }
