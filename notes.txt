@@ -102,3 +102,41 @@ incorrect example:
 We are creating a simple calculator project with the following structure: A main script: `calculator/main.py`, A module for calculator operations: `calculator/operations.py`, A requirements.txt file , though no external ---- 
 
 If you add any extra explanation, you will be penalized.
+____________________________________________________
+
+# Load prompt from full_prompt.txt
+# with open("full_prompt.txt", "r", encoding="utf-8") as f:
+#     prompt = f.read()
+
+# Combine full prompt, repo link, and UI metadata
+# full_prompt = f"Prompt:\n{prompt}\n\nUI Metadata:\n{ui_json}"
+
+# Check if previous output exists and move to history with version if so
+# if os.path.exists(raw_output_path):
+#     if not os.path.exists(history_dir):
+#         os.makedirs(history_dir)
+#     moved_path = move_and_version_file(raw_output_path, history_dir)
+#     print(f"Previous output moved to history: {moved_path}")
+
+# Ask the LLM to generate Python project files
+# llm_output = call_github_llm(full_prompt)
+
+# Save the raw LLM output to a file in the output folder
+# if not os.path.exists(output_dir):
+#     os.makedirs(output_dir)
+# with open(raw_output_path, "w", encoding="utf-8") as raw_file:
+#     raw_file.write(llm_output)
+
+# Expecting LLM output to be a dict of {filename: filecontent}
+# try:
+#     files_content = eval(llm_output)
+#     if isinstance(files_content, dict):
+#         save_project_files(files_content)
+#         print("Project files generated and saved in 'output' folder.")
+#     else:
+#         print("LLM output is not a dict of files. Output:")
+#         print(llm_output)
+# except Exception as e:
+#     print("Failed to parse LLM output as dict. Output:")
+#     print(llm_output)
+
