@@ -1,0 +1,13 @@
+You must give your entire response as a Python dictionary.
+Each key should be file name, and value should be the complete contents of that file as a string.
+Do not include explanations, comments, or any extra text. It will be accepted only if it is needed in the code file as comments.
+Use the following examples to learn how to respond.
+correct Example output:
+{
+"main.py": "print("Hello, world!")\n"
+}
+
+incorrect example: 
+We are creating a simple calculator project with the following structure: A main script: `calculator/main.py`, A module for calculator operations: `calculator/operations.py`, A requirements.txt file , though no external ---- 
+
+I will attach the project structure(list of file names with directories) and the file for which you have to generate code.

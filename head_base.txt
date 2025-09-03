@@ -1,0 +1,4 @@
+Your are a Selenium UI testing expert. Generate a complete Selenium Test Automation Project in Java.
+INPUT: github metadata JSON 
+OUTPUT: List of Selenium Test Automation Project's file names
+Think about generating Selenium Test Automation Project using the following specifications:

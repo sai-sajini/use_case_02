@@ -15,10 +15,6 @@ load_dotenv()  # This loads variables from .env
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 print("GITHUB_TOKEN loaded:", repr(GITHUB_TOKEN))
 
-# Load prompt from prompt_base.txt
-with open("prompt_base.txt", "r", encoding="utf-8") as f:
-    prompt = f.read()
-
 client = ChatCompletionsClient(
     endpoint="https://models.github.ai/inference",
     credential=AzureKeyCredential(GITHUB_TOKEN),
@@ -61,6 +57,22 @@ if __name__ == "__main__":
     raw_output_filename = "llm_raw_output.txt"
     raw_output_path = os.path.join(output_dir, raw_output_filename)
 
+    # Load head_base.txt
+    with open("head_base.txt", "r", encoding="utf-8") as f:
+        head_base = f.read()
+    # Load tail_base.txt
+    with open("tail_base.txt", "r", encoding="utf-8") as f:
+        tail_base = f.read()
+    # Load specs.txt
+    with open("specs.txt", "r", encoding="utf-8") as f:
+        specs = f.read()
+    # Load head_common.txt
+    with open("head_common.txt", "r", encoding="utf-8") as f:
+        head_common = f.read()
+    # Load tail_common.txt
+    with open("tail_common.txt", "r", encoding="utf-8") as f:
+                tail_common = f.read()
+
     # Get git repo link from user
     repo_link = input("Enter the git repo link: ").strip()
 
@@ -78,12 +90,8 @@ if __name__ == "__main__":
         ui_metadata = parse_ui_files(ui_files)
         ui_json = json.dumps(ui_metadata, indent=2)
 
-        # Load prompt_base.txt
-        with open("prompt_base.txt", "r", encoding="utf-8") as f:
-            prompt_base = f.read()
-
-        # Prepare prompt for LLM: send prompt_base and github metadata
-        base_prompt = f"Prompt:\n{prompt_base}\n\nGitHub Metadata:\n{ui_json}"
+        # Prepare prompt for LLM: send head_base and github metadata
+        base_prompt = f"Prompt:\n{head_base}\n{specs}\n{tail_base}\n\nGitHub Metadata:\n{ui_json}"
         llm_file_names_output = call_github_llm(base_prompt)
 
         # Parse output as list of file names
@@ -103,16 +111,16 @@ if __name__ == "__main__":
             print("Failed to parse LLM output as list. Output:")
             print(llm_file_names_output)
 
-        # Call LLM n times with prompt_common.txt, passing current_file each time
+        # Call LLM n times with head_common.txt, passing current_file each time
         if 'file_names' in locals() and isinstance(file_names, list):
-            with open("prompt_common.txt", "r", encoding="utf-8") as f:
-                prompt_common = f.read()
+            
             from preprocessing import write_code_to_file
             for i in range(num_of_files):
                 current_file = file_names[i]
                 # Prepare prompt for LLM for current file
-                file_prompt = f"Prompt:\n{prompt_common}\n\nProject Structure:\n{file_names}\n\nFile for which you should generate code: {current_file}\n"
+                file_prompt = f"Prompt:\n{head_common}\n{specs}\n{tail_common}\n\nProject Structure:\n{file_names}\n\nFile for which you should generate code: {current_file}\n"
                 llm_file_output = call_github_llm(file_prompt)
+                
                 # Expecting output: {current_file: code}
                 try:
                     file_dict = eval(llm_file_output)
@@ -126,34 +134,4 @@ if __name__ == "__main__":
                     print(f"Failed to parse LLM output for {current_file}. Output:")
                     print(llm_file_output)
 
-        # Combine prompt, repo link, and UI metadata
-        full_prompt = f"Prompt:\n{prompt}\n\nUI Metadata:\n{ui_json}"
-
-        # Check if previous output exists and move to history with version if so
-        if os.path.exists(raw_output_path):
-            if not os.path.exists(history_dir):
-                os.makedirs(history_dir)
-            moved_path = move_and_version_file(raw_output_path, history_dir)
-            print(f"Previous output moved to history: {moved_path}")
-
-        # Ask the LLM to generate Python project files
-        llm_output = call_github_llm(full_prompt)
-
-        # Save the raw LLM output to a file in the output folder
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-        with open(raw_output_path, "w", encoding="utf-8") as raw_file:
-            raw_file.write(llm_output)
-
-        # Expecting LLM output to be a dict of {filename: filecontent}
-        try:
-            files_content = eval(llm_output)
-            if isinstance(files_content, dict):
-                save_project_files(files_content)
-                print("Project files generated and saved in 'output' folder.")
-            else:
-                print("LLM output is not a dict of files. Output:")
-                print(llm_output)
-        except Exception as e:
-            print("Failed to parse LLM output as dict. Output:")
-            print(llm_output)
+        

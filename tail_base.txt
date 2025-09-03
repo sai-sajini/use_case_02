@@ -1,0 +1,11 @@
+Think about how you're going to structure, design, code the project and respond with only a python list that contains only the file names including any folder path if necessary in double-quotes.
+Use the following examples to learn how to respond.
+correct Example output:
+["pom.xml", "src/main/java/com/yourcompany/pages/LoginPage.java"]
+incorrect examples: 
+We are creating a simple calculator project with the following structure: A main script: `calculator/main.py`, A module for calculator operations: `calculator/operations.py`, A requirements.txt file , though no external ---- 
+or
+[pom.xml,
+src/main/java/com/yourcompany/pages/LoginPage.java,
+...]
+If you add any extra explanation, you will be penalized.
