@@ -2,6 +2,7 @@ package com.yourcompany.pages;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
@@ -9,68 +10,57 @@ import java.util.List;
 
 public class ProductsPage {
     private WebDriver driver;
+    private Actions actions;
 
-    @FindBy(id = "products-title")
-    private WebElement productsTitle;
-
-    @FindBy(id = "search-box")
+    @FindBy(id = "searchBox")
     private WebElement searchBox;
 
-    @FindBy(id = "search-button")
+    @FindBy(id = "searchButton")
     private WebElement searchButton;
 
-    @FindBy(xpath = "//table[@id='products-table']/tbody/tr")
+    @FindBy(css = "#productTable tbody tr")
     private List<WebElement> productRows;
 
-    @FindBy(xpath = "//select[@id='category-dropdown']")
+    @FindBy(id = "categoryDropdown")
     private WebElement categoryDropdown;
 
-    @FindBy(id = "add-product-button")
-    private WebElement addProductButton;
+    @FindBy(xpath = "//button[contains(text(),'Add to Cart')]")
+    private List<WebElement> addToCartButtons;
 
-    @FindBy(id = "product-name")
-    private WebElement inputProductName;
+    @FindBy(xpath = "//input[@type='file' and @id='productFileUpload']")
+    private WebElement productFileUpload;
 
-    @FindBy(id = "product-desc")
-    private WebElement inputProductDesc;
+    @FindBy(id = "dragSource")
+    private WebElement dragSource;
 
-    @FindBy(id = "product-price")
-    private WebElement inputProductPrice;
+    @FindBy(id = "dropTarget")
+    private WebElement dropTarget;
 
-    @FindBy(xpath = "//select[@id='product-category']")
-    private WebElement selectProductCategory;
+    @FindBy(id = "sortDropdown")
+    private WebElement sortDropdown;
 
-    @FindBy(css = "button.submit-product")
-    private WebElement submitProductButton;
+    @FindBy(id = "errorMessage")
+    private WebElement errorMessage;
 
-    @FindBy(xpath = "//span[@id='product-upload-label']")
-    private WebElement productUploadLabel;
-
-    @FindBy(xpath = "//input[@type='file' and @id='product-file-upload']")
-    private WebElement fileUploadInput;
-
-    @FindBy(xpath = "//div[@id='drag-drop-area']")
-    private WebElement dragDropArea;
-
-    @FindBy(xpath = "//div[@id='message-box']")
-    private WebElement messageBox;
+    @FindBy(id = "successMessage")
+    private WebElement successMessage;
 
     public ProductsPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
+        this.actions = new Actions(driver);
     }
 
-    public boolean isProductsTitleDisplayed() {
-        return productsTitle.isDisplayed();
-    }
-
-    public void searchProduct(String productName) {
+    public void enterSearch(String searchText) {
         searchBox.clear();
-        searchBox.sendKeys(productName);
+        searchBox.sendKeys(searchText);
+    }
+
+    public void clickSearchButton() {
         searchButton.click();
     }
 
-    public int getProductsCount() {
+    public int getProductCount() {
         return productRows.size();
     }
 
@@ -79,37 +69,9 @@ public class ProductsPage {
         select.selectByVisibleText(category);
     }
 
-    public void clickAddProductButton() {
-        addProductButton.click();
-    }
-
-    public void enterProductDetails(String name, String desc, String price, String category) {
-        inputProductName.clear();
-        inputProductName.sendKeys(name);
-        inputProductDesc.clear();
-        inputProductDesc.sendKeys(desc);
-        inputProductPrice.clear();
-        inputProductPrice.sendKeys(price);
-        Select select = new Select(selectProductCategory);
-        select.selectByVisibleText(category);
-    }
-
-    public void submitProduct() {
-        submitProductButton.click();
-    }
-
-    public String getMessageBoxText() {
-        return messageBox.getText();
-    }
-
-    public void uploadProductFile(String absoluteFilePath) {
-        fileUploadInput.sendKeys(absoluteFilePath);
-    }
-
-    public void dragAndDropProductFile(String absoluteFilePath) {
-        // Use Selenium's drag and drop
-        org.openqa.selenium.interactions.Actions actions = new org.openqa.selenium.interactions.Actions(driver);
-        actions.dragAndDrop(fileUploadInput, dragDropArea).perform();
+    public void sortProducts(String sortOption) {
+        Select select = new Select(sortDropdown);
+        select.selectByVisibleText(sortOption);
     }
 
     public boolean isProductPresent(String productName) {
@@ -121,7 +83,43 @@ public class ProductsPage {
         return false;
     }
 
-    public boolean isProductUploadLabelDisplayed() {
-        return productUploadLabel.isDisplayed();
+    public void addProductToCartByName(String productName) {
+        for (int i = 0; i < productRows.size(); i++) {
+            WebElement row = productRows.get(i);
+            if (row.getText().contains(productName)) {
+                addToCartButtons.get(i).click();
+                break;
+            }
+        }
+    }
+
+    public String getSuccessMessage() {
+        return successMessage.isDisplayed() ? successMessage.getText() : "";
+    }
+
+    public String getErrorMessage() {
+        return errorMessage.isDisplayed() ? errorMessage.getText() : "";
+    }
+
+    public void uploadProductFile(String filePath) {
+        productFileUpload.sendKeys(filePath);
+    }
+
+    public void dragProductToCart() {
+        actions.dragAndDrop(dragSource, dropTarget).build().perform();
+    }
+
+    public boolean isDragSuccess() {
+        return successMessage.isDisplayed() && successMessage.getText().contains("dragged successfully");
+    }
+
+    public boolean isAddToCartButtonEnabledForProduct(String productName) {
+        for (int i = 0; i < productRows.size(); i++) {
+            WebElement row = productRows.get(i);
+            if (row.getText().contains(productName)) {
+                return addToCartButtons.get(i).isEnabled();
+            }
+        }
+        return false;
     }
 }

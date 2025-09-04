@@ -139,4 +139,15 @@ ____________________________________________________
 # except Exception as e:
 #     print("Failed to parse LLM output as dict. Output:")
 #     print(llm_output)
-
+# def move_and_version_file(src_path, dest_dir):
+#     """
+#     Moves src_path to dest_dir with a dynamic version (timestamp) appended.
+#     Returns the new path.
+#     """
+#     base = os.path.basename(src_path)                # e.g., 'llm_raw_output.txt'
+#     name, ext = os.path.splitext(base)               # e.g., ('llm_raw_output', '.txt')
+#     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+#     new_name = f"{name}_v{timestamp}{ext}"           # e.g., 'llm_raw_output_v20240822_030700.txt'
+#     dest_path = os.path.join(dest_dir, new_name)
+#     shutil.move(src_path, dest_path)
+#     return dest_path

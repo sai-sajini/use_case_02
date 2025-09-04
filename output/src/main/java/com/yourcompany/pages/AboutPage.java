@@ -4,86 +4,93 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
+import org.openqa.selenium.interactions.Actions;
+import com.yourcompany.utils.LoggerUtil;
 
 public class AboutPage {
     private WebDriver driver;
-    private WebDriverWait wait;
 
-    @FindBy(xpath = "//h1[contains(text(),'About Us')]")
-    private WebElement aboutHeader;
+    @FindBy(css = "h1.page-title")
+    private WebElement pageTitle;
 
-    @FindBy(id = "company-mission")
-    private WebElement companyMission;
+    @FindBy(id = "about-description")
+    private WebElement aboutDescription;
 
-    @FindBy(id = "company-values")
-    private WebElement companyValues;
+    @FindBy(xpath = "//a[contains(@href,'team')]")
+    private WebElement teamLink;
 
-    @FindBy(css = "button#read-more")
-    private WebElement readMoreButton;
-
-    @FindBy(id = "more-description")
-    private WebElement moreDescription;
-
-    @FindBy(css = "#team-members")
+    @FindBy(xpath = "//div[@class='team-member']")
     private WebElement teamSection;
 
-    @FindBy(css = "#team-members .member")
-    private java.util.List<WebElement> teamMembers;
+    @FindBy(id = "download-brochure")
+    private WebElement downloadBrochureBtn;
+
+    @FindBy(id = "upload-company-profile")
+    private WebElement uploadCompanyProfileInput;
+
+    @FindBy(css = "#drag-profile-area")
+    private WebElement dragDropProfileArea;
+
+    @FindBy(xpath = "//button[@id='about-submit']")
+    private WebElement submitBtn;
+
+    @FindBy(css = ".error-message")
+    private WebElement errorMessage;
 
     public AboutPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         PageFactory.initElements(driver, this);
     }
 
-    public boolean isAboutHeaderDisplayed() {
-        wait.until(ExpectedConditions.visibilityOf(aboutHeader));
-        return aboutHeader.isDisplayed();
+    public String getPageTitle() {
+        LoggerUtil.info("Getting About Page title");
+        return pageTitle.getText();
     }
 
-    public String getCompanyMission() {
-        wait.until(ExpectedConditions.visibilityOf(companyMission));
-        return companyMission.getText();
+    public String getDescription() {
+        LoggerUtil.info("Getting description from About Page");
+        return aboutDescription.getText();
     }
 
-    public String getCompanyValues() {
-        wait.until(ExpectedConditions.visibilityOf(companyValues));
-        return companyValues.getText();
-    }
-
-    public void clickReadMore() {
-        wait.until(ExpectedConditions.elementToBeClickable(readMoreButton));
-        readMoreButton.click();
-    }
-
-    public boolean isMoreDescriptionDisplayed() {
-        try {
-            wait.until(ExpectedConditions.visibilityOf(moreDescription));
-            return moreDescription.isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
+    public void clickTeamLink() {
+        LoggerUtil.info("Clicking Team link on About Page");
+        teamLink.click();
     }
 
     public boolean isTeamSectionDisplayed() {
-        wait.until(ExpectedConditions.visibilityOf(teamSection));
+        LoggerUtil.info("Checking if Team section is displayed");
         return teamSection.isDisplayed();
     }
 
-    public int getTeamMembersCount() {
-        wait.until(ExpectedConditions.visibilityOfAllElements(teamMembers));
-        return teamMembers.size();
+    public void clickDownloadBrochure() {
+        LoggerUtil.info("Clicking Download Brochure button");
+        downloadBrochureBtn.click();
     }
 
-    public String getTeamMemberName(int index) {
-        wait.until(ExpectedConditions.visibilityOfAllElements(teamMembers));
-        if (index < teamMembers.size()) {
-            return teamMembers.get(index).getText();
-        } else {
-            throw new IndexOutOfBoundsException("Team member index out of range");
-        }
+    public void uploadCompanyProfile(String filePath) {
+        LoggerUtil.info("Uploading company profile: " + filePath);
+        uploadCompanyProfileInput.sendKeys(filePath);
+    }
+
+    public void dragAndDropProfile(String filePath) {
+        LoggerUtil.info("Performing drag and drop for company profile: " + filePath);
+        Actions actions = new Actions(driver);
+        actions.moveToElement(dragDropProfileArea).click().perform();
+        uploadCompanyProfile(filePath);
+    }
+
+    public void clickSubmit() {
+        LoggerUtil.info("Clicking Submit button on About Page");
+        submitBtn.click();
+    }
+
+    public String getErrorMessage() {
+        LoggerUtil.info("Getting error message from About Page");
+        return errorMessage.getText();
+    }
+
+    public boolean isErrorMessageDisplayed() {
+        LoggerUtil.info("Checking if error message is displayed on About Page");
+        return errorMessage.isDisplayed();
     }
 }

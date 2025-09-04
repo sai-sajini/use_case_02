@@ -37,18 +37,6 @@ def save_project_files(files_content, output_dir="output"):
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
 
-def move_and_version_file(src_path, dest_dir):
-    """
-    Moves src_path to dest_dir with a dynamic version (timestamp) appended.
-    Returns the new path.
-    """
-    base = os.path.basename(src_path)                # e.g., 'llm_raw_output.txt'
-    name, ext = os.path.splitext(base)               # e.g., ('llm_raw_output', '.txt')
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    new_name = f"{name}_v{timestamp}{ext}"           # e.g., 'llm_raw_output_v20240822_030700.txt'
-    dest_path = os.path.join(dest_dir, new_name)
-    shutil.move(src_path, dest_path)
-    return dest_path
 
 if __name__ == "__main__":
 
@@ -116,6 +104,7 @@ if __name__ == "__main__":
             
             from preprocessing import write_code_to_file
             for i in range(num_of_files):
+                count = 1
                 current_file = file_names[i]
                 # Prepare prompt for LLM for current file
                 file_prompt = f"Prompt:\n{head_common}\n{specs}\n{tail_common}\n\nProject Structure:\n{file_names}\n\nFile for which you should generate code: {current_file}\n"
@@ -126,10 +115,12 @@ if __name__ == "__main__":
                     file_dict = eval(llm_file_output)
                     if isinstance(file_dict, dict) and current_file in file_dict:
                         parse_and_write_llm_output(file_dict, base_dir=output_dir)
-                        print(f"Code for {current_file} written to file.")
-                    else:
+                        print(f"{count} Code for {current_file} written to file.")
+                        count = count + 1
+                    else: 
                         print(f"LLM output for {current_file} is not valid. Output:")
                         print(llm_file_output)
+                    
                 except Exception as e:
                     print(f"Failed to parse LLM output for {current_file}. Output:")
                     print(llm_file_output)

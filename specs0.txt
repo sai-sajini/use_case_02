@@ -1,0 +1,44 @@
+Tech Stack & Requirements:
+
+Selenium 4.24.0
+Java 17
+Cucumber BDD framework
+Page Object Model (POM) using @FindBy annotations
+WebDriverManager 5.9.2 for driver setup
+Extent Reports for reporting
+Log4j 2.x for logging
+
+POMxml file 
+cucumber-java dependency version:- 7.18.1 
+cucumber -junit dependency version: 7.18.1 
+org junit jupiter dependency is not required 
+org-apache.poi dependency version:-5.3.0 
+replace poi-ooxml to poi-ooxml-schemas dependency version:- 4.12 
+ dependency not required:-com.fasterxml.jackson.core 
+ replace maven-compiler-plugin to maven-surefire-report-plugin wersion -3.5.0
+
+Maven project structure:
+
+src/main/java/com/yourcompany/pages → Page Object classes for all major UI components and flows
+src/main/java/com/yourcompany/utils → Utility classes (DriverManager, ConfigReader, LoggerUtil)
+src/test/java/com/yourcompany/steps → Step definitions for all pages/components
+src/test/java/com/yourcompany/runners → Test runner classes
+src/test/java/com/yourcompany/hooks → Hooks for setup/teardown
+src/test/resources/features → Feature files for all scenarios
+src/test/resources/config → Config files (config.properties, log4j2.xml)
+src/test/resources/testdata → Test data files (Excel, JSON)
+
+All Page Objects must use @FindBy for locators and include logic to interact with UI elements (buttons, inputs, dropdowns, tables, etc.).
+All step definitions must map Cucumber steps to Page Object methods and use config.properties for input values.
+Implement positive and negative scenarios for all major flows (e.g., login, form submission, file upload, drag & drop, etc.).
+Integrate Extent Reports and Log4j for reporting and logging.
+Use config.properties for browser, baseURL, credentials, and all dynamic input values.
+Ensure code is modular, maintainable, and follows best practices.
+
+Instructions:
+
+Automatically detect all major UI components and flows.
+Scaffold the Maven project structure and generate all required code, config, and resource files.
+Ensure all logic is implemented and ready to run.
+Do not require any manual intervention.
+All function used in the code must be utilized in the steps file.
