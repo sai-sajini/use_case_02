@@ -5,51 +5,30 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigReader {
-    private static Properties properties;
-    private static final String CONFIG_FILE_PATH = "src/test/resources/config/config.properties";
+    private static final String CONFIG_PATH = "src/test/resources/config/config.properties";
+    private static Properties properties = new Properties();
 
     static {
-        loadProperties();
-    }
-
-    private static void loadProperties() {
-        properties = new Properties();
-        try (FileInputStream fis = new FileInputStream(CONFIG_FILE_PATH)) {
+        try (FileInputStream fis = new FileInputStream(CONFIG_PATH)) {
             properties.load(fis);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load configuration from " + CONFIG_FILE_PATH, e);
+            throw new RuntimeException("Failed to load config.properties", e);
         }
     }
 
-    public static String getProperty(String key) {
+    public static String get(String key) {
         return properties.getProperty(key);
     }
 
-    public static String getBrowser() {
-        return properties.getProperty("browser");
+    public static int getInt(String key) {
+        return Integer.parseInt(properties.getProperty(key));
     }
 
-    public static String getBaseURL() {
-        return properties.getProperty("baseURL");
+    public static boolean getBoolean(String key) {
+        return Boolean.parseBoolean(properties.getProperty(key));
     }
 
-    public static String getUsername() {
-        return properties.getProperty("username");
-    }
-
-    public static String getPassword() {
-        return properties.getProperty("password");
-    }
-
-    public static String getReportPath() {
-        return properties.getProperty("reportPath");
-    }
-
-    public static String getLogPath() {
-        return properties.getProperty("logPath");
-    }
-
-    public static String getTestDataPath() {
-        return properties.getProperty("testDataPath");
+    public static Properties getProperties() {
+        return properties;
     }
 }

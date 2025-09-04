@@ -1,44 +1,42 @@
 package com.yourcompany.hooks;
 
 import com.yourcompany.utils.DriverManager;
-import com.yourcompany.utils.ExtentReportUtil;
+import com.yourcompany.utils.ConfigReader;
+import com.yourcompany.utils.ExtentReportManager;
 import com.yourcompany.utils.LoggerUtil;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
-import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 
 public class Hooks {
-    private static Logger logger = LoggerUtil.getLogger(Hooks.class);
+    private WebDriver driver;
+    private LoggerUtil logger = LoggerUtil.getInstance();
 
     @Before
-    public void setUp(Scenario scenario) {
-        logger.info("================ Test Started: " + scenario.getName() + " =================");
-        DriverManager.initDriver();
-        ExtentReportUtil.createTest(scenario.getName());
+    public void beforeScenario(Scenario scenario) {
+        driver = DriverManager.getDriver();
+        logger.info("Starting scenario: " + scenario.getName());
+        ExtentReportManager.createTest(scenario.getName());
     }
 
     @After
-    public void tearDown(Scenario scenario) {
-        WebDriver driver = DriverManager.getDriver();
+    public void afterScenario(Scenario scenario) {
         if (scenario.isFailed()) {
-            logger.error("Test Failed: " + scenario.getName());
-            if (driver != null) {
+            try {
                 byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
                 scenario.attach(screenshot, "image/png", "Failed Step Screenshot");
-                ExtentReportUtil.fail(scenario.getName(), "Scenario failed. Screenshot attached.");
-            } else {
-                ExtentReportUtil.fail(scenario.getName(), "Scenario failed but WebDriver is null.");
+                ExtentReportManager.failTestWithScreenshot(screenshot);
+                logger.error("Scenario failed. Screenshot captured.");
+            } catch (Exception e) {
+                logger.error("Error capturing screenshot: " + e.getMessage());
             }
         } else {
-            logger.info("Test Passed: " + scenario.getName());
-            ExtentReportUtil.pass(scenario.getName(), "Scenario passed.");
+            ExtentReportManager.passTest();
         }
-        ExtentReportUtil.flushReports();
+        logger.info("Scenario ended: " + scenario.getName());
         DriverManager.quitDriver();
-        logger.info("================ Test Finished: " + scenario.getName() + " =================");
     }
 }

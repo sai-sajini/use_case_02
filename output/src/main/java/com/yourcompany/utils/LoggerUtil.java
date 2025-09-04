@@ -4,11 +4,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LoggerUtil {
-    private LoggerUtil() {
-        // Private constructor to prevent instantiation
-    }
+    private static Logger logger = null;
 
     public static Logger getLogger(Class<?> clazz) {
-        return LogManager.getLogger(clazz);
+        if (logger == null) {
+            logger = LogManager.getLogger(clazz);
+        }
+        return logger;
     }
 }

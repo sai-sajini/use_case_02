@@ -5,90 +5,110 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.interactions.Actions;
+import java.util.List;
 
 public class HomePage {
     private WebDriver driver;
-    private Actions actions;
 
-    @FindBy(xpath = "//a[text()='Login']")
-    private WebElement loginLink;
+    @FindBy(id = "loginButton")
+    private WebElement loginButton;
 
-    @FindBy(id = "search-input")
-    private WebElement searchInput;
+    @FindBy(id = "username")
+    private WebElement usernameInput;
 
-    @FindBy(id = "search-btn")
+    @FindBy(id = "password")
+    private WebElement passwordInput;
+
+    @FindBy(linkText = "Register")
+    private WebElement registerLink;
+
+    @FindBy(css = "#searchBox")
+    private WebElement searchBox;
+
+    @FindBy(css = "#searchButton")
     private WebElement searchButton;
 
-    @FindBy(xpath = "//a[text()='Contact']")
-    private WebElement contactLink;
+    @FindBy(css = ".product-list .product-item")
+    private List<WebElement> productItems;
 
-    @FindBy(xpath = "//a[text()='About']")
-    private WebElement aboutLink;
-
-    @FindBy(xpath = "//a[text()='Products']")
-    private WebElement productsLink;
-
-    @FindBy(xpath = "//input[@type='file']")
+    @FindBy(id = "fileUpload")
     private WebElement fileUploadInput;
 
-    @FindBy(id = "upload-btn")
-    private WebElement uploadButton;
+    @FindBy(id = "dragDropArea")
+    private WebElement dragDropArea;
 
-    @FindBy(id = "drag-source")
-    private WebElement dragSource;
+    @FindBy(css = "#cartIcon")
+    private WebElement cartIcon;
 
-    @FindBy(id = "drop-target")
-    private WebElement dropTarget;
+    @FindBy(xpath = "//div[@class='message']")
+    private WebElement messageDiv;
+
+    @FindBy(css = "nav .nav-link")
+    private List<WebElement> navigationLinks;
 
     public HomePage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
-        this.actions = new Actions(driver);
+    }
+
+    public void enterUsername(String username) {
+        usernameInput.clear();
+        usernameInput.sendKeys(username);
+    }
+
+    public void enterPassword(String password) {
+        passwordInput.clear();
+        passwordInput.sendKeys(password);
     }
 
     public void clickLogin() {
-        loginLink.click();
+        loginButton.click();
     }
 
-    public void enterSearchKeyword(String keyword) {
-        searchInput.clear();
-        searchInput.sendKeys(keyword);
+    public void clickRegister() {
+        registerLink.click();
     }
 
-    public void clickSearch() {
+    public void searchProduct(String productName) {
+        searchBox.clear();
+        searchBox.sendKeys(productName);
         searchButton.click();
     }
 
-    public void goToContactPage() {
-        contactLink.click();
+    public int getProductCount() {
+        return productItems.size();
     }
 
-    public void goToAboutPage() {
-        aboutLink.click();
+    public void selectProductByIndex(int index) {
+        if (index >= 0 && index < productItems.size()) {
+            productItems.get(index).click();
+        }
     }
 
-    public void goToProductsPage() {
-        productsLink.click();
+    public void uploadFile(String absoluteFilePath) {
+        fileUploadInput.sendKeys(absoluteFilePath);
     }
 
-    public void uploadFile(String filePath) {
-        fileUploadInput.sendKeys(filePath);
-        uploadButton.click();
+    public void dragAndDrop(String sourceCssSelector) {
+        WebElement source = driver.findElement(org.openqa.selenium.By.cssSelector(sourceCssSelector));
+        Actions actions = new Actions(driver);
+        actions.dragAndDrop(source, dragDropArea).perform();
     }
 
-    public void performDragAndDrop() {
-        actions.dragAndDrop(dragSource, dropTarget).perform();
+    public void clickCartIcon() {
+        cartIcon.click();
     }
 
-    public boolean isLoginLinkDisplayed() {
-        return loginLink.isDisplayed();
+    public String getMessageText() {
+        return messageDiv.getText();
     }
 
-    public boolean isSearchInputDisplayed() {
-        return searchInput.isDisplayed();
-    }
-
-    public boolean isContactLinkDisplayed() {
-        return contactLink.isDisplayed();
+    public void clickNavigationLink(String linkText) {
+        for (WebElement link : navigationLinks) {
+            if (link.getText().trim().equalsIgnoreCase(linkText)) {
+                link.click();
+                break;
+            }
+        }
     }
 }
