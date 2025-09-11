@@ -45,22 +45,6 @@ if __name__ == "__main__":
     raw_output_filename = "llm_raw_output.txt"
     raw_output_path = os.path.join(output_dir, raw_output_filename)
 
-    # Load head_base.txt
-    with open("head_base.txt", "r", encoding="utf-8") as f:
-        head_base = f.read()
-    # Load tail_base.txt
-    with open("tail_base.txt", "r", encoding="utf-8") as f:
-        tail_base = f.read()
-    # Load specs.txt
-    with open("specs.txt", "r", encoding="utf-8") as f:
-        specs = f.read()
-    # Load head_common.txt
-    with open("head_common.txt", "r", encoding="utf-8") as f:
-        head_common = f.read()
-    # Load tail_common.txt
-    with open("tail_common.txt", "r", encoding="utf-8") as f:
-                tail_common = f.read()
-
     # Get git repo link from user
     repo_link = input("Enter the git repo link: ").strip()
 
@@ -78,51 +62,30 @@ if __name__ == "__main__":
         ui_metadata = parse_ui_files(ui_files)
         ui_json = json.dumps(ui_metadata, indent=2)
 
-        # Prepare prompt for LLM: send head_base and github metadata
-        base_prompt = f"Prompt:\n{head_base}\n{specs}\n{tail_base}\n\nGitHub Metadata:\n{ui_json}"
-        llm_file_names_output = call_github_llm(base_prompt)
+        # Load only_prompt.txt
+        with open("only_prompt.txt", "r", encoding="utf-8") as f:
+            only_prompt = f.read()
 
-        # Parse output as list of file names
+        # Prepare prompt for LLM: only_prompt + github metadata
+        prompt = f"{only_prompt}\nINPUT: {ui_json}\nOUTPUT:"
+        llm_output = call_github_llm(prompt)
+
+        # Save the raw LLM output to a file in the output folder
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        with open(raw_output_path, "w", encoding="utf-8") as raw_file:
+            raw_file.write(llm_output)
+        # Also store the full LLM output in output/output.txt
+        with open(os.path.join(output_dir, "output.txt"), "w", encoding="utf-8") as out_file:
+            out_file.write(llm_output)
+
+        # Parse and write files using preprocessing.py
+        from preprocessing import parse_and_write_llm_output
         try:
-            file_names = eval(llm_file_names_output)
-            if isinstance(file_names, list):
-                num_of_files = len(file_names)
-                print(f"File names from LLM: {file_names}")
-                print(f"Number of files: {num_of_files}")
-                # Create empty files using preprocessing.py
-                from preprocessing import create_empty_files
-                create_empty_files(file_names, base_dir=output_dir)
-            else:
-                print("LLM output is not a list of file names. Output:")
-                print(llm_file_names_output)
+            parse_and_write_llm_output(llm_output, base_dir=output_dir)
+            print("Project files generated and saved in 'output' folder.")
         except Exception as e:
-            print("Failed to parse LLM output as list. Output:")
-            print(llm_file_names_output)
-
-        # Call LLM n times with head_common.txt, passing current_file each time
-        if 'file_names' in locals() and isinstance(file_names, list):
-            
-            from preprocessing import write_code_to_file
-            for i in range(num_of_files):
-                count = 1
-                current_file = file_names[i]
-                # Prepare prompt for LLM for current file
-                file_prompt = f"Prompt:\n{head_common}\n{specs}\n{tail_common}\n\nProject Structure:\n{file_names}\n\nFile for which you should generate code: {current_file}\n"
-                llm_file_output = call_github_llm(file_prompt)
-                
-                # Expecting output: {current_file: code}
-                try:
-                    file_dict = eval(llm_file_output)
-                    if isinstance(file_dict, dict) and current_file in file_dict:
-                        parse_and_write_llm_output(file_dict, base_dir=output_dir)
-                        print(f"{count} Code for {current_file} written to file.")
-                        count = count + 1
-                    else: 
-                        print(f"LLM output for {current_file} is not valid. Output:")
-                        print(llm_file_output)
-                    
-                except Exception as e:
-                    print(f"Failed to parse LLM output for {current_file}. Output:")
-                    print(llm_file_output)
+            print("Failed to parse and write LLM output. Output:")
+            print(llm_output)
 
         

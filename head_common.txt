@@ -1,5 +1,0 @@
-Your are a Selenium UI testing expert. Generate a complete Selenium Test Automation Project in Java.
-Generate a complete Selenium + Java + BDD + POM test automation framework using the given metadata.
-INPUT: Project file
-OUTPUT: Selenium Test Automation Project
-Think about Generating Selenium Test Automation Project using the following specifications:

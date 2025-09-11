@@ -1,3 +1,9 @@
+Your are a Selenium UI testing expert. Generate a complete Selenium Test Automation Project in Java.
+Generate a complete Selenium + Java + BDD + POM test automation framework using the given metadata.
+INPUT: github metadata JSON 
+OUTPUT: Python dictionary format of project
+
+Think about generating Selenium Test Automation Project using the following specifications:
 -Create Page Object classes with @FindBy annotations for all UI elements on each page.
 -Implement Step Definitions that utilize all Page Object methods and variables.
 -Generate Feature files with both positive and negative scenarios, inferred from the UI and business logic.
@@ -24,3 +30,18 @@
 -Ensure the framework is ready to run with no manual changes required.
 -Handle any UI popups or overlays that may block interactions.
 -Ensure all error message assertions match the actual UI output.
+
+Format for OUTPUT:
+-respond with a Python dictionary, using "{ }"
+-keys and values should be enclosed in double quotes"" 
+-key value pairs needs to be seperated by commas
+-key: file names with file path where ever necessary
+-values: code content of the file
+-don't give any extra reasoning. Just give the output in the mentioned format.
+correct Example output:
+{
+"main.py": "print("Hello, world!")\n"
+}
+
+---IMPORTANT---
+keep the code consice by having only necessary lines of codes. Don't add any extra comments and waste lines. 
