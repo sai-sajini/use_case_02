@@ -4,93 +4,71 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.interactions.Actions;
-import com.yourcompany.utils.LoggerUtil;
+import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 
 public class AboutPage {
     private WebDriver driver;
+    private static final int TIMEOUT = 10;
 
-    @FindBy(css = "h1.page-title")
-    private WebElement pageTitle;
+    @FindBy(xpath = "//h1[text()='About Us']")
+    private WebElement aboutUsHeader;
 
-    @FindBy(id = "about-description")
-    private WebElement aboutDescription;
+    @FindBy(id = "company-history")
+    private WebElement companyHistorySection;
 
-    @FindBy(xpath = "//a[contains(@href,'team')]")
-    private WebElement teamLink;
+    @FindBy(id = "our-team")
+    private WebElement ourTeamSection;
 
-    @FindBy(xpath = "//div[@class='team-member']")
-    private WebElement teamSection;
+    @FindBy(className = "mission-text")
+    private WebElement missionStatement;
 
-    @FindBy(id = "download-brochure")
-    private WebElement downloadBrochureBtn;
+    @FindBy(css = "button#learn-more")
+    private WebElement learnMoreButton;
 
-    @FindBy(id = "upload-company-profile")
-    private WebElement uploadCompanyProfileInput;
+    @FindBy(id = "popup-close")
+    private WebElement popupCloseButton;
 
-    @FindBy(css = "#drag-profile-area")
-    private WebElement dragDropProfileArea;
-
-    @FindBy(xpath = "//button[@id='about-submit']")
-    private WebElement submitBtn;
-
-    @FindBy(css = ".error-message")
-    private WebElement errorMessage;
+    @FindBy(css = "div.popup-overlay")
+    private WebElement popupOverlay;
 
     public AboutPage(WebDriver driver) {
         this.driver = driver;
-        PageFactory.initElements(driver, this);
+        // Use AJAX locator factory for implicit wait on elements
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, TIMEOUT), this);
     }
 
-    public String getPageTitle() {
-        LoggerUtil.info("Getting About Page title");
-        return pageTitle.getText();
+    public boolean isAboutUsHeaderDisplayed() {
+        return aboutUsHeader.isDisplayed();
     }
 
-    public String getDescription() {
-        LoggerUtil.info("Getting description from About Page");
-        return aboutDescription.getText();
+    public String getMissionStatementText() {
+        return missionStatement.getText();
     }
 
-    public void clickTeamLink() {
-        LoggerUtil.info("Clicking Team link on About Page");
-        teamLink.click();
+    public boolean isCompanyHistorySectionDisplayed() {
+        return companyHistorySection.isDisplayed();
     }
 
-    public boolean isTeamSectionDisplayed() {
-        LoggerUtil.info("Checking if Team section is displayed");
-        return teamSection.isDisplayed();
+    public boolean isOurTeamSectionDisplayed() {
+        return ourTeamSection.isDisplayed();
     }
 
-    public void clickDownloadBrochure() {
-        LoggerUtil.info("Clicking Download Brochure button");
-        downloadBrochureBtn.click();
+    public void clickLearnMoreButton() {
+        learnMoreButton.click();
     }
 
-    public void uploadCompanyProfile(String filePath) {
-        LoggerUtil.info("Uploading company profile: " + filePath);
-        uploadCompanyProfileInput.sendKeys(filePath);
+    public boolean isPopupOverlayDisplayed() {
+        try {
+            return popupOverlay.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    public void dragAndDropProfile(String filePath) {
-        LoggerUtil.info("Performing drag and drop for company profile: " + filePath);
-        Actions actions = new Actions(driver);
-        actions.moveToElement(dragDropProfileArea).click().perform();
-        uploadCompanyProfile(filePath);
+    public void closePopupIfPresent() {
+        if(isPopupOverlayDisplayed()) {
+            popupCloseButton.click();
+        }
     }
 
-    public void clickSubmit() {
-        LoggerUtil.info("Clicking Submit button on About Page");
-        submitBtn.click();
-    }
-
-    public String getErrorMessage() {
-        LoggerUtil.info("Getting error message from About Page");
-        return errorMessage.getText();
-    }
-
-    public boolean isErrorMessageDisplayed() {
-        LoggerUtil.info("Checking if error message is displayed on About Page");
-        return errorMessage.isDisplayed();
-    }
 }

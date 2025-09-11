@@ -2,124 +2,99 @@ package com.yourcompany.pages;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.Select;
 import java.util.List;
 
 public class ProductsPage {
-    private WebDriver driver;
-    private Actions actions;
+    WebDriver driver;
 
-    @FindBy(id = "searchBox")
-    private WebElement searchBox;
+    @FindBy(xpath = "//h1[contains(text(),'Products')]")
+    public WebElement productsHeader;
 
-    @FindBy(id = "searchButton")
-    private WebElement searchButton;
+    @FindBy(xpath = "//input[@id='search-products']")
+    public WebElement searchInput;
 
-    @FindBy(css = "#productTable tbody tr")
-    private List<WebElement> productRows;
+    @FindBy(xpath = "//button[@id='search-btn']")
+    public WebElement searchButton;
 
-    @FindBy(id = "categoryDropdown")
-    private WebElement categoryDropdown;
+    @FindBy(xpath = "//div[@class='product-list']//div[contains(@class,'product-item')]")
+    public List<WebElement> productItems;
 
-    @FindBy(xpath = "//button[contains(text(),'Add to Cart')]")
-    private List<WebElement> addToCartButtons;
+    @FindBy(xpath = "//span[@id='no-product-message']")
+    public WebElement noProductMessage;
 
-    @FindBy(xpath = "//input[@type='file' and @id='productFileUpload']")
-    private WebElement productFileUpload;
+    @FindBy(xpath = "//button[contains(@class,'add-to-cart-btn')]")
+    public List<WebElement> addToCartButtons;
 
-    @FindBy(id = "dragSource")
-    private WebElement dragSource;
+    @FindBy(xpath = "//div[contains(@class,'cart-popup')]//button[text()='Close']")
+    public WebElement closeCartPopupBtn;
 
-    @FindBy(id = "dropTarget")
-    private WebElement dropTarget;
+    @FindBy(xpath = "//span[@id='cart-count']")
+    public WebElement cartCountIcon;
 
-    @FindBy(id = "sortDropdown")
-    private WebElement sortDropdown;
-
-    @FindBy(id = "errorMessage")
-    private WebElement errorMessage;
-
-    @FindBy(id = "successMessage")
-    private WebElement successMessage;
+    @FindBy(xpath = "//div[@id='error-overlay']//button[text()='Dismiss']")
+    public WebElement errorOverlayDismissBtn;
 
     public ProductsPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
-        this.actions = new Actions(driver);
     }
 
-    public void enterSearch(String searchText) {
-        searchBox.clear();
-        searchBox.sendKeys(searchText);
+    public String getProductsHeader() {
+        return productsHeader.getText();
+    }
+
+    public void enterProductSearch(String query) {
+        searchInput.clear();
+        searchInput.sendKeys(query);
     }
 
     public void clickSearchButton() {
         searchButton.click();
     }
 
-    public int getProductCount() {
-        return productRows.size();
+    public int getProductsDisplayedCount() {
+        return productItems.size();
     }
 
-    public void selectCategory(String category) {
-        Select select = new Select(categoryDropdown);
-        select.selectByVisibleText(category);
+    public String getNoProductMessage() {
+        return noProductMessage.isDisplayed() ? noProductMessage.getText() : "";
     }
 
-    public void sortProducts(String sortOption) {
-        Select select = new Select(sortDropdown);
-        select.selectByVisibleText(sortOption);
-    }
-
-    public boolean isProductPresent(String productName) {
-        for (WebElement row : productRows) {
-            if (row.getText().contains(productName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void addProductToCartByName(String productName) {
-        for (int i = 0; i < productRows.size(); i++) {
-            WebElement row = productRows.get(i);
-            if (row.getText().contains(productName)) {
-                addToCartButtons.get(i).click();
-                break;
-            }
+    public void addFirstProductToCart() {
+        if (addToCartButtons.size() > 0) {
+            addToCartButtons.get(0).click();
         }
     }
 
-    public String getSuccessMessage() {
-        return successMessage.isDisplayed() ? successMessage.getText() : "";
-    }
-
-    public String getErrorMessage() {
-        return errorMessage.isDisplayed() ? errorMessage.getText() : "";
-    }
-
-    public void uploadProductFile(String filePath) {
-        productFileUpload.sendKeys(filePath);
-    }
-
-    public void dragProductToCart() {
-        actions.dragAndDrop(dragSource, dropTarget).build().perform();
-    }
-
-    public boolean isDragSuccess() {
-        return successMessage.isDisplayed() && successMessage.getText().contains("dragged successfully");
-    }
-
-    public boolean isAddToCartButtonEnabledForProduct(String productName) {
-        for (int i = 0; i < productRows.size(); i++) {
-            WebElement row = productRows.get(i);
-            if (row.getText().contains(productName)) {
-                return addToCartButtons.get(i).isEnabled();
-            }
+    public void addProductToCartByIndex(int index) {
+        if (addToCartButtons.size() > index) {
+            addToCartButtons.get(index).click();
         }
-        return false;
+    }
+
+    public void closeCartPopup() {
+        if (closeCartPopupBtn.isDisplayed()) {
+            closeCartPopupBtn.click();
+        }
+    }
+
+    public int getCartCount() {
+        String countText = cartCountIcon.getText();
+        try {
+            return Integer.parseInt(countText);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    public void dismissErrorOverlayIfPresent() {
+        try {
+            if (errorOverlayDismissBtn.isDisplayed()) {
+                errorOverlayDismissBtn.click();
+            }
+        } catch (Exception ignored) {
+        }
     }
 }

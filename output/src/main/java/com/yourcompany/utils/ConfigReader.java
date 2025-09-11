@@ -5,30 +5,49 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigReader {
-    private static final String CONFIG_PATH = "src/test/resources/config/config.properties";
-    private static Properties properties = new Properties();
+    private Properties properties;
+    private static ConfigReader configReader;
+    private final String propertyFilePath = "src/main/java/com/yourcompany/config/config.properties";
 
-    static {
-        try (FileInputStream fis = new FileInputStream(CONFIG_PATH)) {
+    private ConfigReader() {
+        properties = new Properties();
+        try {
+            FileInputStream fis = new FileInputStream(propertyFilePath);
             properties.load(fis);
+            fis.close();
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load config.properties", e);
+            throw new RuntimeException("Could not read config.properties file. " + e.getMessage());
         }
     }
 
-    public static String get(String key) {
-        return properties.getProperty(key);
+    public static ConfigReader getInstance() {
+        if (configReader == null) {
+            configReader = new ConfigReader();
+        }
+        return configReader;
     }
 
-    public static int getInt(String key) {
-        return Integer.parseInt(properties.getProperty(key));
+    public String getBrowser() {
+        String browser = properties.getProperty("browser");
+        if (browser != null)
+            return browser;
+        else
+            throw new RuntimeException("browser not specified in the config.properties file.");
     }
 
-    public static boolean getBoolean(String key) {
-        return Boolean.parseBoolean(properties.getProperty(key));
+    public String getBaseUrl() {
+        String url = properties.getProperty("url");
+        if (url != null)
+            return url;
+        else
+            throw new RuntimeException("url not specified in the config.properties file.");
     }
 
-    public static Properties getProperties() {
-        return properties;
+    public String getReportPath() {
+        String path = properties.getProperty("reportPath");
+        if (path != null)
+            return path;
+        else
+            throw new RuntimeException("reportPath not specified in the config.properties file.");
     }
 }

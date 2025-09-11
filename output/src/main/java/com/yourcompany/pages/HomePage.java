@@ -4,111 +4,131 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.interactions.Actions;
-import java.util.List;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 public class HomePage {
     private WebDriver driver;
 
-    @FindBy(id = "loginButton")
-    private WebElement loginButton;
+    // UI Elements
+    @FindBy(xpath = "//nav//a[text()='Home']")
+    private WebElement homeNavLink;
 
-    @FindBy(id = "username")
-    private WebElement usernameInput;
+    @FindBy(xpath = "//nav//a[text()='About']")
+    private WebElement aboutNavLink;
 
-    @FindBy(id = "password")
-    private WebElement passwordInput;
+    @FindBy(xpath = "//nav//a[text()='Products']")
+    private WebElement productsNavLink;
 
-    @FindBy(linkText = "Register")
-    private WebElement registerLink;
+    @FindBy(xpath = "//nav//a[text()='Contact']")
+    private WebElement contactNavLink;
 
-    @FindBy(css = "#searchBox")
-    private WebElement searchBox;
+    @FindBy(css = "h1.page-title")
+    private WebElement pageTitle;
 
-    @FindBy(css = "#searchButton")
-    private WebElement searchButton;
+    @FindBy(css = "div.alert.alert-success")
+    private WebElement successAlert;
 
-    @FindBy(css = ".product-list .product-item")
-    private List<WebElement> productItems;
+    @FindBy(css = "div.alert.alert-danger")
+    private WebElement errorAlert;
 
-    @FindBy(id = "fileUpload")
-    private WebElement fileUploadInput;
+    @FindBy(xpath = "//button[text()='Get Started']")
+    private WebElement getStartedBtn;
 
-    @FindBy(id = "dragDropArea")
-    private WebElement dragDropArea;
+    @FindBy(id = "newsletter-email")
+    private WebElement newsletterEmailInput;
 
-    @FindBy(css = "#cartIcon")
-    private WebElement cartIcon;
+    @FindBy(id = "newsletter-submit")
+    private WebElement newsletterSubmitBtn;
 
-    @FindBy(xpath = "//div[@class='message']")
-    private WebElement messageDiv;
+    @FindBy(css = "div.newsletter-success-message")
+    private WebElement newsletterSuccessMsg;
 
-    @FindBy(css = "nav .nav-link")
-    private List<WebElement> navigationLinks;
+    @FindBy(css = "div.newsletter-error-message")
+    private WebElement newsletterErrorMsg;
 
     public HomePage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
     }
 
-    public void enterUsername(String username) {
-        usernameInput.clear();
-        usernameInput.sendKeys(username);
+    public String getTitle() {
+        return driver.getTitle();
     }
 
-    public void enterPassword(String password) {
-        passwordInput.clear();
-        passwordInput.sendKeys(password);
+    public String getPageHeading() {
+        return pageTitle.getText();
     }
 
-    public void clickLogin() {
-        loginButton.click();
+    public void clickHomeNav() {
+        homeNavLink.click();
     }
 
-    public void clickRegister() {
-        registerLink.click();
+    public void clickAboutNav() {
+        aboutNavLink.click();
     }
 
-    public void searchProduct(String productName) {
-        searchBox.clear();
-        searchBox.sendKeys(productName);
-        searchButton.click();
+    public void clickProductsNav() {
+        productsNavLink.click();
     }
 
-    public int getProductCount() {
-        return productItems.size();
+    public void clickContactNav() {
+        contactNavLink.click();
     }
 
-    public void selectProductByIndex(int index) {
-        if (index >= 0 && index < productItems.size()) {
-            productItems.get(index).click();
+    public void clickGetStartedButton() {
+        getStartedBtn.click();
+    }
+
+    public void enterNewsletterEmail(String email) {
+        newsletterEmailInput.clear();
+        newsletterEmailInput.sendKeys(email);
+    }
+
+    public void submitNewsletter() {
+        newsletterSubmitBtn.click();
+    }
+
+    public String getNewsletterSuccessMsg() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOf(newsletterSuccessMsg));
+        return newsletterSuccessMsg.getText();
+    }
+
+    public String getNewsletterErrorMsg() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOf(newsletterErrorMsg));
+        return newsletterErrorMsg.getText();
+    }
+
+    public boolean isSuccessAlertVisible() {
+        try {
+            return successAlert.isDisplayed();
+        } catch (Exception e) {
+            return false;
         }
     }
 
-    public void uploadFile(String absoluteFilePath) {
-        fileUploadInput.sendKeys(absoluteFilePath);
+    public boolean isErrorAlertVisible() {
+        try {
+            return errorAlert.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    public void dragAndDrop(String sourceCssSelector) {
-        WebElement source = driver.findElement(org.openqa.selenium.By.cssSelector(sourceCssSelector));
-        Actions actions = new Actions(driver);
-        actions.dragAndDrop(source, dragDropArea).perform();
-    }
+    // Handle any potential modal/popups blocking UI
+    @FindBy(css = "div.modal-dialog button.close")
+    private WebElement modalCloseButton;
 
-    public void clickCartIcon() {
-        cartIcon.click();
-    }
-
-    public String getMessageText() {
-        return messageDiv.getText();
-    }
-
-    public void clickNavigationLink(String linkText) {
-        for (WebElement link : navigationLinks) {
-            if (link.getText().trim().equalsIgnoreCase(linkText)) {
-                link.click();
-                break;
+    public void closeModalIfPresent() {
+        try {
+            if (modalCloseButton.isDisplayed()) {
+                modalCloseButton.click();
             }
+        } catch (Exception ex) {
+            // do nothing
         }
     }
 }
